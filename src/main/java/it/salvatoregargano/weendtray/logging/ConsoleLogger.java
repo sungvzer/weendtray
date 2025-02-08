@@ -1,0 +1,26 @@
+package it.salvatoregargano.weendtray.logging;
+
+import it.salvatoregargano.weendtray.Entrypoint;
+
+/**
+ * Logger that logs messages to the console.
+ */
+public class ConsoleLogger extends Logger {
+    private static ConsoleLogger instance;
+
+    private ConsoleLogger() {
+    }
+
+    public static ConsoleLogger getInstance() {
+        if (instance == null) {
+            instance = new ConsoleLogger();
+        }
+        return instance;
+    }
+
+    @Override
+    public final void log(String message, LogLevel level) {
+        String builder = '[' + Entrypoint.executionId + "] " + '[' + level.toString() + "]: " + message;
+        System.out.println(builder);
+    }
+}
