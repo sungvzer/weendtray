@@ -1,6 +1,9 @@
 package it.salvatoregargano.weendtray.terminal.screens;
 
 import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserPersistence;
+import it.salvatoregargano.weendtray.acl.UserRole;
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,8 +18,32 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         System.out.println("Available commands:");
         System.out.println("/logout - Log out.");
         System.out.println("/exit - Exit the application.");
-        System.out.println("/create_user - Create a new user.");
+        System.out.println("/promote - Promote a user to admin.");
         System.out.println("/help - Show this help message.");
+    }
+
+    private void promoteUser() {
+        var logger = CombinedLogger.getInstance();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter the username of the user you want to promote: ");
+        try {
+            var username = br.readLine();
+            var user = UserPersistence.getUserByUsername(username);
+            if (user == null) {
+                logger.info("Tried to promote non-existing user:" + username);
+                System.out.println("User does not exist.");
+                return;
+            }
+            if (user.getRole() == UserRole.ADMIN) {
+                logger.info("Tried to promote an admin user:" + username);
+                System.out.println("User is already an admin.");
+                return;
+            }
+            UserPersistence.promoteUser(user);
+            System.out.println("User promoted to admin.");
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the input.");
+        }
     }
 
     @Override
@@ -39,6 +66,12 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
             switch (command) {
                 case LOGOUT:
                     running = false;
+                    break;
+                case HELP:
+                    showHelp();
+                    break;
+                case PROMOTE:
+                    promoteUser();
                     break;
                 case EXIT:
                     return false;
@@ -73,7 +106,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
     public enum AdminUserCommand {
         LOGOUT,
         EXIT,
-        CREATE_USER,
+        PROMOTE,
         HELP,
     }
 }

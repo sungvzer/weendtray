@@ -146,6 +146,32 @@ public class UserPersistence {
         return false;
     }
 
+    public static void promoteUser(User user) {
+        var logger = CombinedLogger.getInstance();
+        if (!ensureTableExists()) {
+            logger.error("Error while promoting user: table does not exist");
+            return;
+        }
+
+        if (user.getId() == -1) {
+            return;
+        }
+
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("UPDATE `user` SET `role` = ? WHERE `id` = ?")) {
+            statement.setString(1, UserRole.ADMIN.toString());
+            statement.setInt(2, user.getId());
+            statement.execute();
+
+        } catch (SQLException e) {
+            logger.error("Error while promoting user: " + e.getMessage());
+        }
+
+        logger.info("Promoted user: " + user.getId() + " (" + user.getUsername() + ")");
+    }
+
     public static User getUserByUsername(String username) {
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.
