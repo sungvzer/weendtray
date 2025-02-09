@@ -1,5 +1,7 @@
 package it.salvatoregargano.weendtray.acl;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 public class User {
     private final String username;
     private final String password;
@@ -13,7 +15,6 @@ public class User {
         this(-1, username, password, email, name, surname, role);
     }
 
-
     public User(int id, String username, String password, String email, String name, String surname, UserRole role) {
         this.id = id;
         this.username = username;
@@ -22,6 +23,16 @@ public class User {
         this.name = name;
         this.surname = surname;
         this.role = role;
+    }
+
+    public static String hashPassword(String password) {
+        // hash the password with bcrypt
+        return BCrypt.withDefaults().hashToString(12, password.toCharArray());
+    }
+
+    public static boolean verifyPassword(String password, String hash) {
+        // verify the password with bcrypt
+        return BCrypt.verifyer().verify(password.toCharArray(), hash).verified;
     }
 
     public UserRole getRole() {

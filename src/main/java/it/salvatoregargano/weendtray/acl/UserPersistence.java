@@ -28,7 +28,7 @@ public class UserPersistence {
             var statement = connection.createStatement();
             // create table user with SQLite syntax
             statement.execute("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `email` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `role` TEXT NOT NULL)");
-
+            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_username` ON `user` (`username`)");
         } catch (SQLException e) {
             logger.error("Error while ensuring table `user` exists: " + e.getMessage());
             return false;
@@ -123,5 +123,26 @@ public class UserPersistence {
 
         logger.info("User saved: " + user.getId());
     }
-    
+
+    /**
+     * Checks if at least one admin user exists in the database.
+     *
+     * @return true if at least one admin user exists, false otherwise.
+     */
+    public static boolean atLeastOneAdminUser() {
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("SELECT COUNT(*) FROM `user` WHERE `role` = ?")) {
+            statement.setString(1, UserRole.ADMIN.toString());
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            logger.error("Error while checking if admin user exists: " + e.getMessage());
+        }
+        return false;
+    }
 }
