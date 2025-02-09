@@ -32,7 +32,7 @@ public class Entrypoint implements Callable<Integer> {
     public Integer call() {
         if (!guiMode) {
             try {
-                TerminalApplication.run(debug);
+                new TerminalApplication().run(debug);
             } catch (Exception e) {
                 CombinedLogger.getInstance().error("An error occurred while running the terminal application." + e);
                 return 1;
