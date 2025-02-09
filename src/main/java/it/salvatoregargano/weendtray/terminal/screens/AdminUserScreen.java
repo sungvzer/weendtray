@@ -19,7 +19,43 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         System.out.println("/logout - Log out.");
         System.out.println("/exit - Exit the application.");
         System.out.println("/promote - Promote a user to admin.");
+        System.out.println("/create_user - Create a new user.");
         System.out.println("/help - Show this help message.");
+    }
+
+    private void createUser() {
+        var logger = CombinedLogger.getInstance();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Creating a new user.");
+        try {
+            System.out.print("Username: ");
+            var username = br.readLine();
+            var user = UserPersistence.getUserByUsername(username);
+            if (user != null) {
+                logger.info("Tried to create an existing user: " + username);
+                System.out.println("User already exists.");
+                return;
+            }
+
+            System.out.print("Password: ");
+            var password = System.console().readPassword().toString();
+            var hashedPassword = User.hashPassword(password);
+
+            System.out.print("Name: ");
+            var name = br.readLine();
+
+            System.out.print("Surname: ");
+            var surname = br.readLine();
+
+            System.out.print("Email: ");
+            var email = br.readLine();
+
+            UserPersistence.saveUser(new User(username, hashedPassword, email, name, surname, UserRole.USER));
+            System.out.println("User created.");
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the input.");
+        }
+
     }
 
     private void promoteUser() {
@@ -73,6 +109,9 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
                 case PROMOTE:
                     promoteUser();
                     break;
+                case CREATE_USER:
+                    createUser();
+                    break;
                 case EXIT:
                     return false;
             }
@@ -107,6 +146,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         LOGOUT,
         EXIT,
         PROMOTE,
+        CREATE_USER,
         HELP,
     }
 }
