@@ -14,9 +14,12 @@ public class Entrypoint implements Callable<Integer> {
     private static final int PATCH_VERSION = 0;
     public static final String version = MAJOR_VERSION + "." + MINOR_VERSION + "." + PATCH_VERSION;
 
-    // Define the --gui option.
     @CommandLine.Option(names = "--gui", description = "Start the application in GUI mode.")
-    private boolean guiMode;
+    private boolean guiMode = false;
+
+    @CommandLine.Option(names = {"-d", "--debug"}, description = "Enable debug logging.")
+    private boolean debug = false;
+
 
     public static void main(String[] args) {
         // Create and execute the command line application.
@@ -27,7 +30,7 @@ public class Entrypoint implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         if (!guiMode) {
-            TerminalApplication.run();
+            TerminalApplication.run(debug);
             return 0;
         }
         return 0;

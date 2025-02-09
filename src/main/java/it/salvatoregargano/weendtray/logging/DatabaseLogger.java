@@ -46,6 +46,9 @@ public class DatabaseLogger extends Logger {
 
     @Override
     public final void log(String message, LogLevel level) {
+        if (level.compareTo(logLevel) < 0) {
+            return;
+        }
         if (!initialized) {
             return;
         }

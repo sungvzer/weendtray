@@ -8,6 +8,16 @@ package it.salvatoregargano.weendtray.logging;
  * @see CombinedLogger
  */
 public abstract class Logger {
+    protected LogLevel logLevel = LogLevel.DEBUG;
+
+    public LogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel;
+    }
+
     /**
      * Logs a message with the given log level.
      *

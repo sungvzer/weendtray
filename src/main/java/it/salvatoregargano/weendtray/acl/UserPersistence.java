@@ -123,4 +123,5 @@ public class UserPersistence {
 
         logger.info("User saved: " + user.getId());
     }
+    
 }

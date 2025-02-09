@@ -17,6 +17,12 @@ public class CombinedLogger extends Logger {
         }
         return instance;
     }
+    
+    @Override
+    public final void setLogLevel(LogLevel level) {
+        ConsoleLogger.getInstance().setLogLevel(level);
+        DatabaseLogger.getInstance().setLogLevel(level);
+    }
 
     @Override
     public final void log(String message, LogLevel level) {

@@ -20,7 +20,11 @@ public class ConsoleLogger extends Logger {
 
     @Override
     public final void log(String message, LogLevel level) {
-        String builder = '[' + Entrypoint.executionId + "] " + '[' + level.toString() + "]: " + message;
+        if (level.compareTo(logLevel) < 0) {
+            return;
+        }
+
+        String builder = '[' + Entrypoint.executionId + "] " + '[' + level + "]: " + message;
         System.out.println(builder);
     }
 }
