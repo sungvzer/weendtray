@@ -131,7 +131,7 @@ public class HomeScreen extends AScreen<HomeScreen.Command> {
         System.out.println("Enter the surname:");
         var surname = br.readLine();
 
-        UserPersistence.saveUser(new User(username, hashedPassword, name, surname, UserRole.ADMIN));
+        UserPersistence.saveUser(new User(username, hashedPassword, name, surname, UserRole.ADMIN, true));
         System.out.println("Admin user created.");
         return true;
     }
@@ -158,6 +158,12 @@ public class HomeScreen extends AScreen<HomeScreen.Command> {
             CombinedLogger.getInstance().info("User " + user.getId() + " (" + user.getUsername() + ") failed to log in.");
             return null;
         }
+
+        if (!user.isActive()) {
+            System.out.println("User is not active.");
+            return null;
+        }
+
         return user;
     }
 

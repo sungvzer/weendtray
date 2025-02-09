@@ -19,6 +19,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         System.out.println("/promote - Promote a user to admin.");
         System.out.println("/create_user - Create a new user.");
         System.out.println("/help - Show this help message.");
+        System.out.println("/toggle_user - Toggle a user's active status.");
     }
 
     private void createUser() {
@@ -47,8 +48,8 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
 
             System.out.print("Phone number: ");
             var phoneNumber = br.readLine();
-    
-            UserPersistence.saveUser(new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber));
+
+            UserPersistence.saveUser(new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber, true));
             System.out.println("User created.");
         } catch (IOException e) {
             System.out.println("An error occurred while reading the input.");
@@ -112,6 +113,9 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
                     break;
                 case EXIT:
                     return false;
+                case TOGGLE_USER:
+                    toggleUser();
+                    break;
             }
         }
 
@@ -140,11 +144,36 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         }
     }
 
+    private void toggleUser() throws IOException {
+        var logger = CombinedLogger.getInstance();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter the username of the user you want to toggle: ");
+        try {
+            var username = br.readLine();
+            var user = UserPersistence.getUserByUsername(username);
+            if (user == null) {
+                logger.info("Tried to toggle non-existing user:" + username);
+                System.out.println("User does not exist.");
+                return;
+            }
+            if (user.getRole() == UserRole.ADMIN) {
+                logger.warn("Tried to toggle an admin user:" + username);
+                System.out.println("User is an admin.");
+                return;
+            }
+            UserPersistence.toggleUser(user);
+            System.out.println("User toggled.");
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the input.");
+        }
+    }
+
     public enum AdminUserCommand {
         LOGOUT,
         EXIT,
         PROMOTE,
         CREATE_USER,
         HELP,
+        TOGGLE_USER
     }
 }

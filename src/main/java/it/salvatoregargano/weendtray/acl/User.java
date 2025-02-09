@@ -9,19 +9,21 @@ public class User {
     private final String name;
     private final String surname;
     private UserRole role;
+    private boolean active;
     private int id;
 
-    public User(String username, String password, String name, String surname, UserRole role) {
-        this(-1, username, password, name, surname, role);
+    public User(String username, String password, String name, String surname, UserRole role, boolean active) {
+        this(-1, username, password, name, surname, role, active);
     }
 
-    public User(int id, String username, String password, String name, String surname, UserRole role) {
+    public User(int id, String username, String password, String name, String surname, UserRole role, boolean active) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
         this.surname = surname;
         this.role = role;
+        this.active = active;
     }
 
     public static String hashPassword(String password) {
@@ -62,4 +64,7 @@ public class User {
         return password;
     }
 
+    public boolean isActive() {
+        return active;
+    }
 }
