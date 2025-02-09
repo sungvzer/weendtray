@@ -280,4 +280,30 @@ public class UserPersistence {
         logger.info("User active status toggled: " + user.getId() + " (" + user.getUsername() + "), now " + (user.isActive() ? "inactive" : "active"));
 
     }
+
+    public static void changeUserPlan(User user, PhonePlan phonePlan) {
+        var logger = CombinedLogger.getInstance();
+        if (tableDoesNotExist()) {
+            logger.error("Error while changing user plan: table does not exist");
+            return;
+        }
+
+        if (user.getId() == -1) {
+            return;
+        }
+
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("UPDATE `user` SET `plan` = ? WHERE `id` = ?")) {
+            statement.setString(1, phonePlan.toString());
+            statement.setInt(2, user.getId());
+            statement.execute();
+
+        } catch (SQLException e) {
+            logger.error("Error while changing user plan: " + e.getMessage());
+        }
+
+        logger.info("User plan changed: " + user.getId() + " (" + user.getUsername() + "), now " + phonePlan.toString());
+    }
 }

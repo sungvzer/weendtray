@@ -54,6 +54,40 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         } catch (IOException e) {
             System.out.println("An error occurred while reading the input.");
         }
+    }
+
+    private void changeUserPlan() {
+        var logger = CombinedLogger.getInstance();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter the username of the user you want to change the plan: ");
+        try {
+            var username = br.readLine();
+            var user = UserPersistence.getUserByUsername(username);
+            if (user == null) {
+                logger.info("Tried to change the plan of a non-existing user:" + username);
+                System.out.println("User does not exist.");
+                return;
+            }
+            if (user.getRole() == UserRole.ADMIN) {
+                logger.warn("Tried to change the plan of an admin user:" + username);
+                System.out.println("User is an admin.");
+                return;
+            }
+            System.out.println("Available plans:");
+            for (PhonePlan plan : PhonePlan.values()) {
+                System.out.println(plan);
+            }
+            System.out.print("Enter the new plan: ");
+            var plan = br.readLine().toUpperCase();
+            try {
+                UserPersistence.changeUserPlan(user, PhonePlan.valueOf(plan));
+                System.out.println("User plan changed.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid plan.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the input.");
+        }
 
     }
 
@@ -116,6 +150,9 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
                 case TOGGLE_USER:
                     toggleUser();
                     break;
+                case PLAN:
+                    changeUserPlan();
+                    break;
             }
         }
 
@@ -174,6 +211,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
         PROMOTE,
         CREATE_USER,
         HELP,
-        TOGGLE_USER
+        TOGGLE_USER,
+        PLAN
     }
 }
