@@ -17,6 +17,6 @@ public class MessageEvent extends PhoneEvent {
 
     @Override
     public String getDescription() {
-        return "Message to " + getTargetNumber() + " with content: \"" + content + "\"";
+        return "[" + getUUID() + "][SMS] from " + getSourceNumber() + " to " + getTargetNumber() + " (" + getContent().length() + " characters)";
     }
 }

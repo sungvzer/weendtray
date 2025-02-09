@@ -67,6 +67,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         System.out.println("/help - Show this help message.");
         System.out.println("/info - Show user information.");
         System.out.println("/call - Make a call.");
+        System.out.println("/sms - Send a message.");
     }
 
     @Override
@@ -101,10 +102,48 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
                 case CALL:
                     call();
                     break;
+                case SMS:
+                    sms();
+                    break;
             }
         }
 
         return true;
+    }
+
+    private void sms() throws IOException {
+        final var rb = new BufferedReader(new InputStreamReader(System.in));
+        String targetNumber;
+        String content;
+
+        System.out.println("Register a message event.");
+        System.out.print("Target number: ");
+        targetNumber = rb.readLine();
+        if (targetNumber.isBlank()) {
+            System.out.println("Invalid target number.");
+            return;
+        }
+
+        final var foundUser = UserPersistence.getUserByPhoneNumber(targetNumber);
+        if (foundUser == null) {
+            System.out.println("User not found.");
+            return;
+        }
+        if (targetNumber.equals(user.getPhoneNumber())) {
+            System.out.println("You cannot send a message to yourself.");
+            return;
+        }
+
+        System.out.print("Content: ");
+        content = rb.readLine().trim();
+
+        if (content.isBlank()) {
+            System.out.println("Invalid content.");
+            return;
+        }
+
+
+        phone.sendMessage(targetNumber, content);
     }
 
     private void showInfo() {
@@ -140,6 +179,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         EXIT,
         INFO,
         HELP,
-        CALL
+        CALL,
+        SMS
     }
 }
