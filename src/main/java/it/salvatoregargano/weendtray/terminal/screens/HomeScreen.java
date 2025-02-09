@@ -11,14 +11,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class HomeScreen extends AScreen<HomeScreen.Command>{
+public class HomeScreen extends AScreen<HomeScreen.Command> {
     private final boolean debug;
 
     public HomeScreen(boolean debug) {
         this.debug = debug;
     }
 
-@Override
+    @Override
     public boolean show() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         var logger = CombinedLogger.getInstance();
@@ -71,15 +71,15 @@ public class HomeScreen extends AScreen<HomeScreen.Command>{
                     System.out.println("/signup - Signs up the user.");
                     break;
 
-                case SIGNUP, LOGOUT:
+                case LOGOUT:
                     break;
                 default:
                     System.out.println("Command not implemented yet.");
                     break;
             }
         }
-    return false;
-}
+        return false;
+    }
 
     @Override
     protected Command parseCommand(String input) {
@@ -166,7 +166,6 @@ public class HomeScreen extends AScreen<HomeScreen.Command>{
         EXIT,
         HELP,
         LOGIN,
-        SIGNUP,
         LOGOUT
     }
 }
