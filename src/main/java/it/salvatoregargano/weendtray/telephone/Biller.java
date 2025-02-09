@@ -26,13 +26,13 @@ public class Biller implements Observer<PhoneEvent> {
     }
 
     private double dataCost(DataUsageEvent event) {
-        final double costPerMB = switch (event.getPlan()) {
-            case REGULAR -> 0.1;
-            case PREMIUM -> 0.05;
-            case BUSINESS -> 0.0;
+        final double costPerKB = switch (event.getPlan()) {
+            case REGULAR -> 0.005;
+            case PREMIUM -> 0.00025;
+            case BUSINESS -> 0;
         };
 
-        double cost = costPerMB * event.getDataSizeMB();
+        double cost = costPerKB * event.getDataSizeKB();
         return cost;
     }
 

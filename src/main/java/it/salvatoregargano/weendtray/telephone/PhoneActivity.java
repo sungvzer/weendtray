@@ -25,8 +25,8 @@ public class PhoneActivity extends Observable<PhoneEvent> {
         notifyObservers(event);
     }
 
-    public void useData(int dataSizeMB) {
-        DataUsageEvent event = new DataUsageEvent(plan, userPhoneNumber, dataSizeMB);
+    public void useData(int dataSizeBytes) {
+        DataUsageEvent event = new DataUsageEvent(plan, userPhoneNumber, dataSizeBytes);
         notifyObservers(event);
     }
 }

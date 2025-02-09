@@ -9,6 +9,10 @@ import it.salvatoregargano.weendtray.telephone.PhoneEventLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Duration;
 
 public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserCommand> {
@@ -68,6 +72,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         System.out.println("/info - Show user information.");
         System.out.println("/call - Make a call.");
         System.out.println("/sms - Send a message.");
+        System.out.println("/internet - Use mobile data.");
     }
 
     @Override
@@ -105,10 +110,51 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
                 case SMS:
                     sms();
                     break;
+                case INTERNET:
+                    dataUsage();
+                    break;
             }
         }
 
         return true;
+    }
+
+    private void dataUsage() throws IOException {
+        final var rb = new BufferedReader(new InputStreamReader(System.in));
+
+        String urlToRead;
+        int data;
+
+        System.out.println("Register a data usage event.");
+        System.out.print("URL: ");
+        urlToRead = rb.readLine();
+
+        if (urlToRead.isBlank()) {
+            System.out.println("Invalid URL.");
+            return;
+        }
+
+        // find out real data usage by calling a GET request to the URL
+        StringBuilder result = new StringBuilder();
+        URL url;
+        try {
+            url = new URI(urlToRead).toURL();
+        } catch (IllegalArgumentException | URISyntaxException e) {
+            System.out.println("Invalid URL.");
+            return;
+        }
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()))) {
+            for (String line; (line = reader.readLine()) != null; ) {
+                result.append(line);
+            }
+        }
+        data = result.toString().length();
+
+        phone.useData(data);
     }
 
     private void sms() throws IOException {
@@ -180,6 +226,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         INFO,
         HELP,
         CALL,
-        SMS
+        SMS,
+        INTERNET
     }
 }
