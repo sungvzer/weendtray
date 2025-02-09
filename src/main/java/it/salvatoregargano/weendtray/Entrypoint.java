@@ -1,5 +1,6 @@
 package it.salvatoregargano.weendtray;
 
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.terminal.TerminalApplication;
 import picocli.CommandLine;
 
@@ -28,9 +29,14 @@ public class Entrypoint implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         if (!guiMode) {
-            TerminalApplication.run(debug);
+            try {
+                TerminalApplication.run(debug);
+            } catch (Exception e) {
+                CombinedLogger.getInstance().error("An error occurred while running the terminal application." + e);
+                return 1;
+            }
             return 0;
         }
         return 0;

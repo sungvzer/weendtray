@@ -145,4 +145,21 @@ public class UserPersistence {
         }
         return false;
     }
+
+    public static User getUserByUsername(String username) {
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("SELECT * FROM `user` WHERE `username` = ?")) {
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("name"), rs.getString("surname"), UserRole.valueOf(rs.getString("role")));
+            }
+        } catch (SQLException e) {
+            logger.error("Error while getting user by username: " + e.getMessage());
+        }
+        return null;
+    }
 }

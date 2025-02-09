@@ -30,9 +30,9 @@ public class User {
         return BCrypt.withDefaults().hashToString(12, password.toCharArray());
     }
 
-    public static boolean verifyPassword(String password, String hash) {
+    public boolean verifyPassword(String password) {
         // verify the password with bcrypt
-        return BCrypt.verifyer().verify(password.toCharArray(), hash).verified;
+        return BCrypt.verifyer().verify(password.toCharArray(), this.password).verified;
     }
 
     public UserRole getRole() {
