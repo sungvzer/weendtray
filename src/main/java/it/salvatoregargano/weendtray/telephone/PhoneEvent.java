@@ -5,7 +5,7 @@ import it.salvatoregargano.weendtray.acl.PhonePlan;
 import java.util.UUID;
 
 // Base class for events (abstract to enforce subclassing)
-abstract class PhoneEvent {
+public abstract class PhoneEvent {
     private final String sourceNumber;
     private final String targetNumber;
     private final PhonePlan plan;

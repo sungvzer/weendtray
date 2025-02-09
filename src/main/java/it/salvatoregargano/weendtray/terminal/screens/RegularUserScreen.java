@@ -2,9 +2,9 @@ package it.salvatoregargano.weendtray.terminal.screens;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.telephone.Biller;
 import it.salvatoregargano.weendtray.telephone.PhoneActivity;
 import it.salvatoregargano.weendtray.telephone.PhoneEventLogger;
+import it.salvatoregargano.weendtray.telephone.billing.Biller;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,10 @@
-package it.salvatoregargano.weendtray.telephone;
+package it.salvatoregargano.weendtray.telephone.billing;
 
 import it.salvatoregargano.weendtray.patterns.Observer;
+import it.salvatoregargano.weendtray.telephone.CallEvent;
+import it.salvatoregargano.weendtray.telephone.DataUsageEvent;
+import it.salvatoregargano.weendtray.telephone.MessageEvent;
+import it.salvatoregargano.weendtray.telephone.PhoneEvent;
 
 public class Biller implements Observer<PhoneEvent> {
     private double messageCost(MessageEvent event) {
@@ -10,8 +14,7 @@ public class Biller implements Observer<PhoneEvent> {
             case BUSINESS -> 0.005;
         };
 
-        double cost = costPerCharacter * event.getContent().length();
-        return cost;
+        return costPerCharacter * event.getContent().length();
     }
 
     private double callCost(CallEvent event) {
@@ -21,8 +24,7 @@ public class Biller implements Observer<PhoneEvent> {
             case BUSINESS -> 0.0;
         };
 
-        double cost = costPerMinute * event.getDuration().toMinutes();
-        return cost;
+        return costPerMinute * event.getDuration().toMinutes();
     }
 
     private double dataCost(DataUsageEvent event) {
@@ -32,13 +34,12 @@ public class Biller implements Observer<PhoneEvent> {
             case BUSINESS -> 0;
         };
 
-        double cost = costPerKB * event.getDataSizeKB();
-        return cost;
+        return costPerKB * event.getDataSizeKB();
     }
 
     @Override
     public void update(PhoneEvent event) {
-        double billableCost = 0;
+        double billableCost;
         // TODO: Implement billing logic
         if (event instanceof MessageEvent messageEvent) {
             billableCost = messageCost(messageEvent);
