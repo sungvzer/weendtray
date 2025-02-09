@@ -8,6 +8,7 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -30,7 +31,7 @@ public class Entrypoint implements Callable<Integer> {
         try {
             MigrationRunner.runMigrations();
         } catch (SQLException | IOException | URISyntaxException e) {
-            CombinedLogger.getInstance().error(new StringBuilder().append("An error occurred while running the migrations.\n").append(e.getStackTrace().toString()).toString());
+            CombinedLogger.getInstance().error("An error occurred while running the migrations.\n" + Arrays.toString(e.getStackTrace()));
             System.exit(1);
         }
         // Create and execute the command line application.

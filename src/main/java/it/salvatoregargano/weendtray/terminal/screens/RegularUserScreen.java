@@ -4,7 +4,7 @@ import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.telephone.PhoneActivity;
 import it.salvatoregargano.weendtray.telephone.PhoneEventLogger;
-import it.salvatoregargano.weendtray.telephone.billing.Biller;
+import it.salvatoregargano.weendtray.telephone.billing.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,19 +13,24 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.Duration;
 
 public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserCommand> {
     private final PhoneActivity phone;
-    private RegularUser user;
+    private final WalletActivity wallet;
+    private final RegularUser user;
 
     public RegularUserScreen(RegularUser user) {
         super(user);
         this.user = user;
         this.phone = new PhoneActivity(user.getPhoneNumber(), user.getPhonePlan());
+        this.wallet = new WalletActivity();
 
         phone.addObserver(new Biller());
         phone.addObserver(new PhoneEventLogger());
+
+        wallet.addObserver(new WalletEventHandler());
     }
 
     private void call() throws IOException {
@@ -70,13 +75,15 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         System.out.println("/exit - Exit the application.");
         System.out.println("/help - Show this help message.");
         System.out.println("/info - Show user information.");
+        System.out.println("/money - Show wallet information.");
         System.out.println("/call - Make a call.");
         System.out.println("/sms - Send a message.");
         System.out.println("/internet - Use mobile data.");
+        System.out.println("/top_up - Top up your wallet.");
     }
 
     @Override
-    public boolean show() throws IOException {
+    public boolean show() throws IOException, SQLException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         boolean running = true;
 
@@ -113,10 +120,72 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
                 case INTERNET:
                     dataUsage();
                     break;
+                case TOP_UP:
+                    topUp();
+                    break;
+                case MONEY:
+                    money();
+                    break;
             }
         }
 
         return true;
+    }
+
+    private void money() throws SQLException {
+        final var userWallet = WalletService.getInstance().getWallet(user.getId());
+        System.out.println("Wallet balance: " + userWallet.getBalance());
+    }
+
+    private void topUp() throws SQLException {
+        final var rb = new BufferedReader(new InputStreamReader(System.in));
+        int amount;
+        PaymentMethod paymentMethod;
+
+        System.out.println("Top up your wallet.");
+        System.out.print("Amount: ");
+        try {
+            amount = Integer.parseInt(rb.readLine());
+        } catch (NumberFormatException | IOException e) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        if (amount <= 0) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        System.out.println("Select a payment method:");
+        System.out.println("1. Credit card");
+        System.out.println("2. Cash");
+        System.out.println("3. Bancomat");
+        System.out.print("Choice: ");
+        try {
+            int choice = Integer.parseInt(rb.readLine());
+            switch (choice) {
+                case 1:
+                    paymentMethod = PaymentMethod.CREDIT_CARD;
+                    break;
+                case 2:
+                    paymentMethod = PaymentMethod.CASH;
+                    break;
+                case 3:
+                    paymentMethod = PaymentMethod.BANCOMAT;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    return;
+            }
+        } catch (NumberFormatException | IOException e) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+
+        final var userWallet = WalletService.getInstance().getWallet(user.getId());
+
+        wallet.addAmountToWallet(userWallet, amount, paymentMethod);
     }
 
     private void dataUsage() throws IOException {
@@ -227,6 +296,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         HELP,
         CALL,
         SMS,
-        INTERNET
+        INTERNET,
+        MONEY, TOP_UP
     }
 }
