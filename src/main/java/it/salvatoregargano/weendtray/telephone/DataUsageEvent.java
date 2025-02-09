@@ -17,6 +17,6 @@ public class DataUsageEvent extends PhoneEvent {
 
     @Override
     public String getDescription() {
-        return "Used " + dataSizeKB + "KB of mobile data";
+        return "[" + getUUID() + "][DATA] " + getSourceNumber() + " used " + getDataSizeKB() + " KB";
     }
 }
