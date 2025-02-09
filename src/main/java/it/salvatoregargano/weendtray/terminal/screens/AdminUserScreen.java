@@ -1,8 +1,6 @@
 package it.salvatoregargano.weendtray.terminal.screens;
 
-import it.salvatoregargano.weendtray.acl.User;
-import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.acl.UserRole;
+import it.salvatoregargano.weendtray.acl.*;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 
 import java.io.BufferedReader;
@@ -38,7 +36,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
             }
 
             System.out.print("Password: ");
-            var password = System.console().readPassword().toString();
+            var password = new String(System.console().readPassword());
             var hashedPassword = User.hashPassword(password);
 
             System.out.print("Name: ");
@@ -47,10 +45,10 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
             System.out.print("Surname: ");
             var surname = br.readLine();
 
-            System.out.print("Email: ");
-            var email = br.readLine();
+            System.out.print("Phone number: ");
+            var phoneNumber = br.readLine();
 
-            UserPersistence.saveUser(new User(username, hashedPassword, email, name, surname, UserRole.USER));
+            UserPersistence.saveUser(new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber));
             System.out.println("User created.");
         } catch (IOException e) {
             System.out.println("An error occurred while reading the input.");

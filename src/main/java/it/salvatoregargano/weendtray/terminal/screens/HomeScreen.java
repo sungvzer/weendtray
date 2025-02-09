@@ -1,5 +1,6 @@
 package it.salvatoregargano.weendtray.terminal.screens;
 
+import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
@@ -59,7 +60,7 @@ public class HomeScreen extends AScreen<HomeScreen.Command> {
 
                     running = switch (user.getRole()) {
                         case ADMIN -> new AdminUserScreen(user).show();
-                        case USER -> new RegularUserScreen(user).show();
+                        case USER -> new RegularUserScreen((RegularUser) user).show();
                     };
                     break;
 
@@ -124,14 +125,12 @@ public class HomeScreen extends AScreen<HomeScreen.Command> {
             var password = new String(System.console().readPassword());
             hashedPassword = User.hashPassword(password);
         }
-        System.out.println("Enter the email:");
-        var email = br.readLine();
         System.out.println("Enter the name:");
         var name = br.readLine();
         System.out.println("Enter the surname:");
         var surname = br.readLine();
 
-        UserPersistence.saveUser(new User(username, hashedPassword, email, name, surname, UserRole.ADMIN));
+        UserPersistence.saveUser(new User(username, hashedPassword, name, surname, UserRole.ADMIN));
         System.out.println("Admin user created.");
         return true;
     }

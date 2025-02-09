@@ -27,8 +27,9 @@ public class UserPersistence {
             }
             var statement = connection.createStatement();
             // create table user with SQLite syntax
-            statement.execute("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `email` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `role` TEXT NOT NULL)");
+            statement.execute("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `role` TEXT NOT NULL, `plan` TEXT DEFAULT 'REGULAR', `phonenumber` TEXT DEFAULT NULL)");
             statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_username` ON `user` (`username`)");
+            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_phonenumber` ON `user` (`phonenumber`)");
         } catch (SQLException e) {
             logger.error("Error while ensuring table `user` exists: " + e.getMessage());
             return false;
@@ -56,13 +57,18 @@ public class UserPersistence {
         try (var statement = DatabaseConnection.
                 getInstance().
                 getConnection().
-                prepareStatement("INSERT INTO `user` (`username`, `password`, `email`, `name`, `surname`, `role`) VALUES (?, ?, ?, ?, ?, ?) RETURNING `id`")) {
+                prepareStatement("INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`) VALUES (?, ?, ?, ?, ?, ?) RETURNING `id`")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getName());
-            statement.setString(5, user.getSurname());
-            statement.setString(6, user.getRole().toString());
+            statement.setString(3, user.getName());
+            statement.setString(4, user.getSurname());
+            statement.setString(5, user.getRole().toString());
+            if (user.getRole() == UserRole.USER) {
+                var regularUser = (RegularUser) user;
+                statement.setString(6, regularUser.getPhoneNumber());
+            } else {
+                statement.setString(6, null);
+            }
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
@@ -94,13 +100,22 @@ public class UserPersistence {
         try (var statement = DatabaseConnection.
                 getInstance().
                 getConnection().
-                prepareStatement("UPDATE `user` SET `username` = ?, `password` = ?, `email` = ?, `name` = ?, `surname` = ?, `role` = ? WHERE `id` = ?")) {
+                prepareStatement("UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ? WHERE `id` = ?")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getName());
+            statement.setString(3, user.getName());
+            statement.setString(4, user.getSurname());
             statement.setString(5, user.getRole().toString());
             statement.setInt(6, user.getId());
+            if (user instanceof RegularUser) {
+                var regularUser = (RegularUser) user;
+                statement.setString(7, regularUser.getPhonePlan().toString());
+                statement.setString(8, regularUser.getPhoneNumber());
+            } else {
+                statement.setString(7, "" +
+                        "REGULAR");
+                statement.setString(8, null);
+            }
             statement.execute();
         } catch (SQLException e) {
             logger.error("Error while updating user: " + e.getMessage());
@@ -181,7 +196,27 @@ public class UserPersistence {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("name"), rs.getString("surname"), UserRole.valueOf(rs.getString("role")));
+                var role = UserRole.valueOf(rs.getString("role"));
+                if (role == UserRole.USER) {
+                    return new RegularUser(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("surname"),
+                            PhonePlan.valueOf(rs.getString("plan")),
+                            rs.getString("phonenumber")
+                    );
+                }
+
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        role
+                );
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by username: " + e.getMessage());
