@@ -1,32 +1,35 @@
 package it.salvatoregargano.weendtray;
 
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import it.salvatoregargano.weendtray.terminal.TerminalApplication;
+import picocli.CommandLine;
 
-import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
-public class Entrypoint extends Application {
+@CommandLine.Command(name = "weendtray", mixinStandardHelpOptions = true, version = Entrypoint.version)
+public class Entrypoint implements Callable<Integer> {
     public static final String executionId = UUID.randomUUID().toString();
     private static final int MAJOR_VERSION = 1;
     private static final int MINOR_VERSION = 0;
     private static final int PATCH_VERSION = 0;
-    public static final String version = String.format("%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION);
+    public static final String version = MAJOR_VERSION + "." + MINOR_VERSION + "." + PATCH_VERSION;
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        CombinedLogger.getInstance().info("Starting application version " + version);
-        FXMLLoader fxmlLoader = new FXMLLoader(Entrypoint.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
-        stage.setScene(scene);
-        stage.show();
-    }
+    // Define the --gui option.
+    @CommandLine.Option(names = "--gui", description = "Start the application in GUI mode.")
+    private boolean guiMode;
 
     public static void main(String[] args) {
-        launch();
+        // Create and execute the command line application.
+        int exitCode = new CommandLine(new Entrypoint()).execute(args);
+        System.exit(exitCode);
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        if (!guiMode) {
+            TerminalApplication.run();
+            return 0;
+        }
+        return 0;
     }
 }

@@ -55,7 +55,7 @@ public class DatabaseLogger extends Logger {
                 statement.setString(1, message);
                 statement.setString(2, level.toString());
                 statement.setString(3, it.salvatoregargano.weendtray.Entrypoint.executionId);
-                statement.executeUpdate();
+                statement.execute();
             }
 
         } catch (SQLException e) {
