@@ -47,7 +47,7 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
 
             System.out.print("Phone number: ");
             var phoneNumber = br.readLine();
-
+    
             UserPersistence.saveUser(new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber));
             System.out.println("User created.");
         } catch (IOException e) {

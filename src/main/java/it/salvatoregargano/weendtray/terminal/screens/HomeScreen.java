@@ -54,6 +54,7 @@ public class HomeScreen extends AScreen<HomeScreen.Command> {
                 case LOGIN:
                     var user = loginScreen();
                     if (user == null) {
+                        System.out.println("Login failed.");
                         break;
                     }
 

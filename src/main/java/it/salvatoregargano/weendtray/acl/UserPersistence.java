@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @see User
  */
 public class UserPersistence {
-    private static boolean ensureTableExists() {
+    private static boolean tableDoesNotExist() {
         var logger = CombinedLogger.getInstance();
         try {
             var db = DatabaseConnection.getInstance();
@@ -32,9 +32,9 @@ public class UserPersistence {
             statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_phonenumber` ON `user` (`phonenumber`)");
         } catch (SQLException e) {
             logger.error("Error while ensuring table `user` exists: " + e.getMessage());
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -45,7 +45,7 @@ public class UserPersistence {
      */
     private static void createUser(User user) {
         var logger = CombinedLogger.getInstance();
-        if (!ensureTableExists()) {
+        if (tableDoesNotExist()) {
             logger.error("Error while creating user: table does not exist");
             return;
         }
@@ -88,7 +88,7 @@ public class UserPersistence {
      */
     private static void updateUserById(User user) {
         var logger = CombinedLogger.getInstance();
-        if (!ensureTableExists()) {
+        if (tableDoesNotExist()) {
             logger.error("Error while updating user: table does not exist");
             return;
         }
@@ -107,19 +107,46 @@ public class UserPersistence {
             statement.setString(4, user.getSurname());
             statement.setString(5, user.getRole().toString());
             statement.setInt(6, user.getId());
-            if (user instanceof RegularUser) {
-                var regularUser = (RegularUser) user;
+            if (user instanceof RegularUser regularUser) {
                 statement.setString(7, regularUser.getPhonePlan().toString());
                 statement.setString(8, regularUser.getPhoneNumber());
             } else {
-                statement.setString(7, "" +
-                        "REGULAR");
+                statement.setString(7, "REGULAR");
                 statement.setString(8, null);
             }
             statement.execute();
         } catch (SQLException e) {
             logger.error("Error while updating user: " + e.getMessage());
         }
+    }
+
+    /**
+     * Search for a user by its phone number.
+     */
+    public static RegularUser getUserByPhoneNumber(String userPhoneNumber) {
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("SELECT * FROM `user` WHERE `phonenumber` = ?")) {
+            statement.setString(1, userPhoneNumber);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new RegularUser(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        PhonePlan.valueOf(rs.getString("plan")),
+                        rs.getString("phonenumber")
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Error while getting user by phone number: " + e.getMessage());
+        }
+        return null;
+
     }
 
     /**
@@ -163,7 +190,7 @@ public class UserPersistence {
 
     public static void promoteUser(User user) {
         var logger = CombinedLogger.getInstance();
-        if (!ensureTableExists()) {
+        if (tableDoesNotExist()) {
             logger.error("Error while promoting user: table does not exist");
             return;
         }

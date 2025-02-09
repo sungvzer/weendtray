@@ -1,17 +1,63 @@
 package it.salvatoregargano.weendtray.terminal.screens;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.UserPersistence;
+import it.salvatoregargano.weendtray.telephone.Biller;
+import it.salvatoregargano.weendtray.telephone.PhoneActivity;
+import it.salvatoregargano.weendtray.telephone.PhoneEventLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
 
 public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserCommand> {
+    private final PhoneActivity phone;
     private RegularUser user;
 
     public RegularUserScreen(RegularUser user) {
         super(user);
         this.user = user;
+        this.phone = new PhoneActivity(user.getPhoneNumber(), user.getPhonePlan());
+
+        phone.addObserver(new Biller());
+        phone.addObserver(new PhoneEventLogger());
+    }
+
+    private void call() throws IOException {
+        String targetNumber;
+        int duration;
+        final var rb = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Register a call event.");
+        System.out.print("Target number: ");
+        targetNumber = rb.readLine();
+
+        if (targetNumber.isBlank()) {
+            System.out.println("Invalid target number.");
+            return;
+        }
+
+        if (targetNumber.equals(user.getPhoneNumber())) {
+            System.out.println("You cannot call yourself.");
+            return;
+        }
+
+        System.out.print("Duration (minutes): ");
+        duration = Integer.parseInt(rb.readLine());
+
+        if (duration <= 0) {
+            System.out.println("Invalid duration.");
+            return;
+        }
+
+        final var foundUser = UserPersistence.getUserByPhoneNumber(targetNumber);
+        if (foundUser == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        phone.makeCall(targetNumber, Duration.ofMinutes(duration));
     }
 
     private void showHelp() {
@@ -20,6 +66,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         System.out.println("/exit - Exit the application.");
         System.out.println("/help - Show this help message.");
         System.out.println("/info - Show user information.");
+        System.out.println("/call - Make a call.");
     }
 
     @Override
@@ -51,6 +98,9 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
                     break;
                 case EXIT:
                     return false;
+                case CALL:
+                    call();
+                    break;
             }
         }
 
@@ -89,6 +139,7 @@ public class RegularUserScreen extends UserScreen<RegularUserScreen.RegularUserC
         LOGOUT,
         EXIT,
         INFO,
-        HELP
+        HELP,
+        CALL
     }
 }
