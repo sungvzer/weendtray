@@ -9,7 +9,7 @@ import java.sql.SQLException;
  */
 public class DatabaseConnection {
     private static DatabaseConnection instance;
-    private final Connection connection;
+    private Connection connection;
 
     private DatabaseConnection() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite:telephoneManagement.db");
@@ -22,7 +22,10 @@ public class DatabaseConnection {
         return instance;
     }
 
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
+        if (connection.isClosed()) {
+            connection = DriverManager.getConnection("jdbc:sqlite:telephoneManagement.db");
+        }
         return connection;
     }
 

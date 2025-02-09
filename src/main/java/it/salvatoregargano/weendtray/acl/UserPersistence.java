@@ -17,26 +17,6 @@ import java.sql.SQLException;
  * @see User
  */
 public class UserPersistence {
-    private static boolean tableDoesNotExist() {
-        var logger = CombinedLogger.getInstance();
-        try {
-            var db = DatabaseConnection.getInstance();
-            var connection = db.getConnection();
-            if (!db.tableExists("user")) {
-                logger.info("Creating user table");
-            }
-            var statement = connection.createStatement();
-            // create table user with SQLite syntax
-            statement.execute("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `role` TEXT NOT NULL, `plan` TEXT DEFAULT 'REGULAR', `phonenumber` TEXT DEFAULT NULL, `active` INTEGER DEFAULT 1)");
-            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_username` ON `user` (`username`)");
-            statement.execute("CREATE UNIQUE INDEX IF NOT EXISTS `user_phonenumber` ON `user` (`phonenumber`)");
-        } catch (SQLException e) {
-            logger.error("Error while ensuring table `user` exists: " + e.getMessage());
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Creates a new user in the database.
      * <p>
@@ -45,10 +25,6 @@ public class UserPersistence {
      */
     private static void createUser(User user) {
         var logger = CombinedLogger.getInstance();
-        if (tableDoesNotExist()) {
-            logger.error("Error while creating user: table does not exist");
-            return;
-        }
 
         if (user.getId() != -1) {
             return;
@@ -88,10 +64,6 @@ public class UserPersistence {
      */
     private static void updateUserById(User user) {
         var logger = CombinedLogger.getInstance();
-        if (tableDoesNotExist()) {
-            logger.error("Error while updating user: table does not exist");
-            return;
-        }
 
         if (user.getId() == -1) {
             return;
@@ -191,10 +163,6 @@ public class UserPersistence {
 
     public static void promoteUser(User user) {
         var logger = CombinedLogger.getInstance();
-        if (tableDoesNotExist()) {
-            logger.error("Error while promoting user: table does not exist");
-            return;
-        }
 
         if (user.getId() == -1) {
             return;
@@ -256,10 +224,6 @@ public class UserPersistence {
 
     public static void toggleUser(User user) {
         var logger = CombinedLogger.getInstance();
-        if (tableDoesNotExist()) {
-            logger.error("Error while deactivating user: table does not exist");
-            return;
-        }
 
         if (user.getId() == -1) {
             return;
@@ -283,10 +247,6 @@ public class UserPersistence {
 
     public static void changeUserPlan(User user, PhonePlan phonePlan) {
         var logger = CombinedLogger.getInstance();
-        if (tableDoesNotExist()) {
-            logger.error("Error while changing user plan: table does not exist");
-            return;
-        }
 
         if (user.getId() == -1) {
             return;
