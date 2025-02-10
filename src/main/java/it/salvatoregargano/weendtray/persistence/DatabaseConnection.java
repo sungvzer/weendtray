@@ -12,7 +12,11 @@ public class DatabaseConnection {
     private Connection connection;
 
     private DatabaseConnection() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:telephoneManagement.db");
+        connection = DriverManager.getConnection("jdbc:sqlite:" + getDatabasePath());
+    }
+
+    private static String getDatabasePath() {
+        return System.getProperty("user.home") + "/telephoneManagement.db";
     }
 
     public static DatabaseConnection getInstance() throws SQLException {
@@ -23,9 +27,6 @@ public class DatabaseConnection {
     }
 
     public Connection getConnection() throws SQLException {
-        if (connection.isClosed()) {
-            connection = DriverManager.getConnection("jdbc:sqlite:telephoneManagement.db");
-        }
         return connection;
     }
 
