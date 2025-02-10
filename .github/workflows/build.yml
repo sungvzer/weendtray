@@ -1,0 +1,50 @@
+name: Build Java Project
+
+on:
+    push:
+        tags:
+            - 'v*.*.*' # Trigger on version tags
+jobs:
+    build:
+        permissions:
+            contents: write
+        runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+        steps:
+            # Step 1: Checkout the repository code
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            # Step 2: Set up Java (specify version if necessary)
+            - name: Set up Java 23
+              uses: actions/setup-java@v2
+              with:
+                  java-version: '23' # Specify the version of Java you need
+                  distribution: 'adopt' # Use the AdoptOpenJDK distribution
+
+            # Step 3: Cache Maven dependencies (optional but recommended for faster builds)
+            - name: Cache Maven dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.m2/repository # Path to Maven cache
+                  key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }} # Cache key based on pom.xml changes
+                  restore-keys: |
+                      ${{ runner.os }}-maven-
+
+            # Step 4: Build the project using Maven
+            - name: Build with Maven
+              run: mvn clean compile assembly:single -DskipTests # The 'clean' goal ensures a fresh build, 'package' creates the JAR
+
+            # Step 5: Upload the JAR as an artifact
+            - name: Upload JAR artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: weendtray-jar
+                  path: target/*.jar # Adjust based on your build output location
+
+            # Step 6: Create a release
+            - name: Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: target/*.jar
+                  token: ${{ secrets.GITHUB_TOKEN }}

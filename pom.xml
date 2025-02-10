@@ -6,7 +6,7 @@
 
     <groupId>it.salvatoregargano</groupId>
     <artifactId>WeendTray</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>weendtray</name>
 
     <properties>
