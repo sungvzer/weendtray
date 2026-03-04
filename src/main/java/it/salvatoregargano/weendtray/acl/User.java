@@ -4,10 +4,11 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 
 public class User {
-    private final String username;
-    private final String password;
-    private final String name;
-    private final String surname;
+    private String username;
+    private String password;
+    private String name;
+
+    private String surname;
     private UserRole role;
     private boolean active;
     private int id;
@@ -67,4 +68,30 @@ public class User {
     public boolean isActive() {
         return active;
     }
+
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
 }
