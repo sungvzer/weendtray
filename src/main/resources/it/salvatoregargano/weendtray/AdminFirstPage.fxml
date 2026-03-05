@@ -9,16 +9,16 @@
 <VBox alignment="CENTER" spacing="16" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="it.salvatoregargano.weendtray.ui.AdminFirstPageController">
     <Text strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Benvenuto in WeendTray, iniziamo impostando le credenziali dell'admin!"/>
+          text="%firstPage.welcome"/>
     <VBox alignment="CENTER" spacing="16" onKeyPressed="#onKeyPressed">
         <VBox.margin>
             <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
         </VBox.margin>
-        <TextField fx:id="username" promptText="Username"/>
+        <TextField fx:id="username" promptText="%common.username"/>
         <HBox spacing="8">
-            <PasswordField fx:id="password" promptText="Password" HBox.hgrow="ALWAYS"/>
-            <PasswordField fx:id="passwordRepeat" promptText="Ripeti password" HBox.hgrow="ALWAYS"/>
+            <PasswordField fx:id="password" promptText="%common.password" HBox.hgrow="ALWAYS"/>
+            <PasswordField fx:id="passwordRepeat" promptText="%common.repeatPassword" HBox.hgrow="ALWAYS"/>
         </HBox>
-        <Button onAction="#onConfirm" text="Conferma"/>
+        <Button onAction="#onConfirm" text="%common.confirm"/>
     </VBox>
 </VBox>

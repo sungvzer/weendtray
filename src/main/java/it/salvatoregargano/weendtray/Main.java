@@ -16,13 +16,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Main extends Application {
     public static final String executionId = UUID.randomUUID().toString();
-    private static Stage primaryStage;
+    public static final String I18N_BUNDLE_NAME = "messages";
+    public static final Locale I18N_DEFAULT_LOCALE = Locale.ITALIAN;
 
     void tryLoadFont() {
         try (var fontStream = getClass().getResourceAsStream("fonts/Lato-Regular.ttf")) {
@@ -34,8 +33,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        primaryStage = stage;
-
         try {
             MigrationRunner.runMigrations();
         } catch (SQLException | IOException | URISyntaxException e) {
@@ -50,15 +47,18 @@ public class Main extends Application {
         if (!UserPersistence.atLeastOneAdminUser()) {
             homePage = getClass().getResource("AdminFirstPage.fxml");
         } else {
-            homePage = getClass().getResource("HomePage.fxml");
+            homePage = getClass().getResource("LoginPage.fxml");
         }
+
+        ResourceBundle bundle = ResourceBundle.getBundle(I18N_BUNDLE_NAME, I18N_DEFAULT_LOCALE);
         FXMLLoader loader = new FXMLLoader(homePage);
+        loader.setResources(bundle);
         VBox root = loader.load();
         Scene scene = SceneFactory.createScene(root);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("WeendTray");
-        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));
-        primaryStage.show();
+        stage.setScene(scene);
+        stage.setTitle("WeendTray");
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));
+        stage.show();
     }
 }

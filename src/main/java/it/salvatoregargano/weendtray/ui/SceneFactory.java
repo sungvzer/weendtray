@@ -11,7 +11,7 @@ public class SceneFactory {
     static void addStylesheets(Scene scene) {
         scene.getStylesheets().add(GLOBAL_CSS);
     }
-
+    
     public static Scene createScene(Parent root, double width, double height) {
         Scene scene = new Scene(root, width, height);
         addStylesheets(scene);
