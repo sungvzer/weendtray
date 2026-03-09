@@ -1,11 +1,11 @@
 package it.salvatoregargano.weendtray.acl;
 
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
-import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
 /**
  * Class to persist users to the database.
@@ -234,6 +234,8 @@ public class UserPersistence {
                             PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
                             rs.getInt("active") == 1);
+                    users.add(u);
+                    continue;
                 }
 
                 User u = new User(

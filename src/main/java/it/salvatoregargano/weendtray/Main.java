@@ -31,7 +31,27 @@ public class Main extends Application {
     public static final Locale I18N_DEFAULT_LOCALE = Locale.ITALIAN;
 
     void tryLoadFont() {
+        String[] weights = { "Thin", "Light", "Bold", "Black" };
+        String[] styles = { "Italic", "" };
+
+        for (String weight : weights) {
+            for (String style : styles) {
+                String fontFileName = String.format("fonts/Lato-%s%s.ttf", weight, style);
+                try (var fontStream = getClass().getResourceAsStream(fontFileName)) {
+                    Font.loadFont(fontStream, 12.0);
+                } catch (IOException e) {
+                    System.err.println("Could not load font: " + fontFileName);
+                }
+            }
+        }
+
         try (var fontStream = getClass().getResourceAsStream("fonts/Lato-Regular.ttf")) {
+            Font.loadFont(fontStream, 12.0);
+        } catch (IOException e) {
+            System.err.println("Could not load font.");
+        }
+
+        try (var fontStream = getClass().getResourceAsStream("fonts/Lato-Italic.ttf")) {
             Font.loadFont(fontStream, 12.0);
         } catch (IOException e) {
             System.err.println("Could not load font.");

@@ -4,19 +4,20 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.salvatoregargano.weendtray.ui.HomePageController">
-    <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-          AnchorPane.topAnchor="0">
-        <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
-            <Text fx:id="helloField" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
-            <Region prefHeight="0.0" HBox.hgrow="ALWAYS"/>
-            <Button mnemonicParsing="false" text="Esci" onMouseClicked="#onLogout"/>
-        </ToolBar>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-            <Tab closable="false" text="Utenti" fx:id="usersTab"/>
-        </TabPane>
-    </VBox>
-</AnchorPane>
+
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="it.salvatoregargano.weendtray.ui.HomePageController">
+    <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
+        <Text fx:id="helloField" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+        <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+        <Button mnemonicParsing="false" onMouseClicked="#onLogout" text="Esci" />
+    </ToolBar>
+    <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <Tab fx:id="usersTab" closable="false" text="Utenti" />
+    </TabPane>
+</VBox>

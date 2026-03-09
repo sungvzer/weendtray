@@ -1,6 +1,8 @@
 package it.salvatoregargano.weendtray.acl;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 public class User {
     private String username;
@@ -11,6 +13,12 @@ public class User {
     private UserRole role;
     private boolean active;
     private int id;
+
+    BooleanProperty isAdmin;
+
+    public BooleanProperty isAdminProperty() {
+        return isAdmin;
+    }
 
     public User(String username, String password, String name, String surname, UserRole role, boolean active) {
         this(-1, username, password, name, surname, role, active);
@@ -24,6 +32,7 @@ public class User {
         this.surname = surname;
         this.role = role;
         this.active = active;
+        this.isAdmin = new SimpleBooleanProperty(role == UserRole.ADMIN);
     }
 
     public static String hashPassword(String password) {
@@ -86,6 +95,7 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
+        this.isAdmin.set(role == UserRole.ADMIN);
     }
 
     public void setActive(boolean active) {
