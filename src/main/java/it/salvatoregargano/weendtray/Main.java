@@ -1,17 +1,6 @@
 package it.salvatoregargano.weendtray;
 
-import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
-import it.salvatoregargano.weendtray.persistence.MigrationRunner;
-import it.salvatoregargano.weendtray.ui.SceneFactory;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,6 +9,21 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
+
+import it.salvatoregargano.weendtray.acl.CredentialsService;
+import it.salvatoregargano.weendtray.acl.CredentialsServiceError;
+import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserPersistence;
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.persistence.MigrationRunner;
+import it.salvatoregargano.weendtray.ui.SceneFactory;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 public class Main extends Application {
     public static final String executionId = UUID.randomUUID().toString();
@@ -39,25 +43,54 @@ public class Main extends Application {
         try {
             MigrationRunner.runMigrations();
         } catch (SQLException | IOException | URISyntaxException e) {
-            CombinedLogger.getInstance().error("An error occurred while running the migrations.\n" + Arrays.toString(e.getStackTrace()));
+            CombinedLogger.getInstance()
+                    .error("An error occurred while running the migrations.\n" + Arrays.toString(e.getStackTrace()));
             System.exit(1);
         }
 
         tryLoadFont();
 
+        File sessionFile = new File(System.getProperty("user.home"), ".weendtray_session");
+        if (sessionFile.exists()) {
+            try {
+                String token = java.nio.file.Files.readString(sessionFile.toPath());
+                String[] parts = token.split(":");
+                if (parts.length != 2) {
+                    throw new IOException("Invalid session token format.");
+                }
+                int userId = Integer.parseInt(parts[0]);
+                String sessionToken = parts[1];
+                User user = UserPersistence.getUserById(userId);
+                if (user == null) {
+                    throw new IOException("User not found for session token.");
+                }
+                CredentialsService.getInstance().resumeSession(user, sessionToken);
+            } catch (IOException e) {
+                CombinedLogger.getInstance().error("Error while reading session token from file: " + e.getMessage());
+            } catch (CredentialsServiceError e) {
+                CombinedLogger.getInstance().error("Error while logging in with session token: " + e.getMessage());
+            }
+        }
+
         URL homePage;
 
-        if (!UserPersistence.atLeastOneAdminUser()) {
-            homePage = getClass().getResource("AdminFirstPage.fxml");
+        if (CredentialsService.getInstance().getLoggedUser() != null) {
+            homePage = getClass().getResource("HomePage.fxml");
         } else {
-            homePage = getClass().getResource("LoginPage.fxml");
+            if (!UserPersistence.atLeastOneAdminUser()) {
+                homePage = getClass().getResource("AdminFirstPage.fxml");
+            } else {
+                homePage = getClass().getResource("LoginPage.fxml");
+            }
         }
 
         FXMLLoader loader = new FXMLLoader(homePage);
-        VBox root = loader.load();
+        Parent root = loader.load();
         Scene scene = SceneFactory.createScene(root);
 
         stage.setScene(scene);
+        stage.setHeight(600);
+        stage.setWidth(800);
         stage.setTitle("WeendTray");
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));
         stage.show();

@@ -3,6 +3,7 @@ open module WeendTray {
     requires java.sql;
     requires javafx.controls;
     requires javafx.fxml;
+    requires transitive javafx.graphics;
 
     exports it.salvatoregargano.weendtray;
 }

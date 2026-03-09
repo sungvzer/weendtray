@@ -10,7 +10,8 @@ import java.util.ArrayList;
 /**
  * Class to persist users to the database.
  * <p>
- * This class is responsible for saving users to the database. It uses the {@link DatabaseConnection} class to connect to the database.
+ * This class is responsible for saving users to the database. It uses the
+ * {@link DatabaseConnection} class to connect to the database.
  *
  * <p>
  * The table `user` is created if it does not exist.
@@ -18,6 +19,45 @@ import java.util.ArrayList;
  * @see User
  */
 public class UserPersistence {
+    public static User getUserById(int id) {
+        var logger = CombinedLogger.getInstance();
+        if (id < 0) {
+            return null;
+        }
+
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM `user` WHERE `id` = ?")) {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                var role = UserRole.valueOf(rs.getString("role"));
+                if (role == UserRole.USER) {
+                    return new RegularUser(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("surname"),
+                            PhonePlan.valueOf(rs.getString("plan")),
+                            rs.getString("phonenumber"),
+                            rs.getInt("active") == 1);
+                }
+
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        role,
+                        rs.getInt("active") == 1);
+            }
+        } catch (SQLException e) {
+            logger.error("Error while getting user by id: " + e.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Creates a new user in the database.
      * <p>
@@ -31,10 +71,8 @@ public class UserPersistence {
             return;
         }
 
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`) VALUES (?, ?, ?, ?, ?, ?) RETURNING `id`")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`) VALUES (?, ?, ?, ?, ?, ?) RETURNING `id`")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -70,10 +108,8 @@ public class UserPersistence {
             return;
         }
 
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `id` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                "UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `id` = ?")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -100,10 +136,8 @@ public class UserPersistence {
      */
     public static RegularUser getUserByPhoneNumber(String userPhoneNumber) {
         var logger = CombinedLogger.getInstance();
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("SELECT * FROM `user` WHERE `phonenumber` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM `user` WHERE `phonenumber` = ?")) {
             statement.setString(1, userPhoneNumber);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -115,8 +149,7 @@ public class UserPersistence {
                         rs.getString("surname"),
                         PhonePlan.valueOf(rs.getString("plan")),
                         rs.getString("phonenumber"),
-                        rs.getInt("active") == 1
-                );
+                        rs.getInt("active") == 1);
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by phone number: " + e.getMessage());
@@ -149,10 +182,8 @@ public class UserPersistence {
      */
     public static boolean atLeastOneAdminUser() {
         var logger = CombinedLogger.getInstance();
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("SELECT COUNT(*) FROM `user` WHERE `role` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT COUNT(*) FROM `user` WHERE `role` = ?")) {
             statement.setString(1, UserRole.ADMIN.toString());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -171,10 +202,8 @@ public class UserPersistence {
             return;
         }
 
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("UPDATE `user` SET `role` = ? WHERE `id` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("UPDATE `user` SET `role` = ? WHERE `id` = ?")) {
             statement.setString(1, UserRole.ADMIN.toString());
             statement.setInt(2, user.getId());
             statement.execute();
@@ -190,10 +219,8 @@ public class UserPersistence {
         ArrayList<User> users = new ArrayList<>();
 
         var logger = CombinedLogger.getInstance();
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("SELECT * FROM `user`")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM `user`")) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 var role = UserRole.valueOf(rs.getString("role"));
@@ -206,8 +233,7 @@ public class UserPersistence {
                             rs.getString("surname"),
                             PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
-                            rs.getInt("active") == 1
-                    );
+                            rs.getInt("active") == 1);
                 }
 
                 User u = new User(
@@ -217,8 +243,7 @@ public class UserPersistence {
                         rs.getString("name"),
                         rs.getString("surname"),
                         role,
-                        rs.getInt("active") == 1
-                );
+                        rs.getInt("active") == 1);
 
                 users.add(u);
             }
@@ -231,10 +256,8 @@ public class UserPersistence {
 
     public static User getUserByUsername(String username) {
         var logger = CombinedLogger.getInstance();
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("SELECT * FROM `user` WHERE `username` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM `user` WHERE `username` = ?")) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -248,8 +271,7 @@ public class UserPersistence {
                             rs.getString("surname"),
                             PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
-                            rs.getInt("active") == 1
-                    );
+                            rs.getInt("active") == 1);
                 }
 
                 return new User(
@@ -259,8 +281,7 @@ public class UserPersistence {
                         rs.getString("name"),
                         rs.getString("surname"),
                         role,
-                        rs.getInt("active") == 1
-                );
+                        rs.getInt("active") == 1);
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by username: " + e.getMessage());
@@ -275,10 +296,8 @@ public class UserPersistence {
             return;
         }
 
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("UPDATE `user` SET `active` = ? WHERE `id` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("UPDATE `user` SET `active` = ? WHERE `id` = ?")) {
             statement.setInt(1, user.isActive() ? 0 : 1);
             statement.setInt(2, user.getId());
             statement.execute();
@@ -287,7 +306,8 @@ public class UserPersistence {
             logger.error("Error while deactivating user: " + e.getMessage());
         }
 
-        logger.info("User active status toggled: " + user.getId() + " (" + user.getUsername() + "), now " + (user.isActive() ? "inactive" : "active"));
+        logger.info("User active status toggled: " + user.getId() + " (" + user.getUsername() + "), now "
+                + (user.isActive() ? "inactive" : "active"));
 
     }
 
@@ -298,10 +318,8 @@ public class UserPersistence {
             return;
         }
 
-        try (var statement = DatabaseConnection.
-                getInstance().
-                getConnection().
-                prepareStatement("UPDATE `user` SET `plan` = ? WHERE `id` = ?")) {
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("UPDATE `user` SET `plan` = ? WHERE `id` = ?")) {
             statement.setString(1, phonePlan.toString());
             statement.setInt(2, user.getId());
             statement.execute();
@@ -310,6 +328,7 @@ public class UserPersistence {
             logger.error("Error while changing user plan: " + e.getMessage());
         }
 
-        logger.info("User plan changed: " + user.getId() + " (" + user.getUsername() + "), now " + phonePlan.toString());
+        logger.info(
+                "User plan changed: " + user.getId() + " (" + user.getUsername() + "), now " + phonePlan.toString());
     }
 }

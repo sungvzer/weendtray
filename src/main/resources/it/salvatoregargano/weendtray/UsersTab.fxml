@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.salvatoregargano.weendtray.ui.UsersTabController">
+
+<VBox spacing="8.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.salvatoregargano.weendtray.ui.UsersTabController">
     <children>
+      <TextField promptText="Cerca un utente" />
         <TableView fx:id="tableView">
             <columns>
-                <TableColumn fx:id="idColumn" text="ID"/>
-                <TableColumn fx:id="usernameColumn" text="Nome utente"/>
-                <TableColumn fx:id="actionsColumn" text="Azioni"/>
+                <TableColumn fx:id="idColumn" text="ID" />
+                <TableColumn fx:id="usernameColumn" text="Nome utente" />
+                <TableColumn fx:id="actionsColumn" text="Azioni" />
             </columns>
         </TableView>
     </children>
+   <padding>
+      <Insets bottom="16.0" top="16.0" />
+   </padding>
 </VBox>

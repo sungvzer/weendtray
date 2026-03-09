@@ -2,7 +2,6 @@ package it.salvatoregargano.weendtray.acl;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
-
 public class User {
     private String username;
     private String password;
@@ -68,7 +67,6 @@ public class User {
     public boolean isActive() {
         return active;
     }
-
 
     public void setUsername(String username) {
         this.username = username;

@@ -26,14 +26,14 @@ public class MigrationRunner {
     /**
      * Gets the latest migration that was run.
      *
-     * @return The latest migration filename or null if no migrations have been applied.
+     * @return The latest migration filename or null if no migrations have been
+     *         applied.
      */
     private static String getLatestMigration() throws SQLException {
         final var connection = DatabaseConnection.getInstance().getConnection();
         try (
                 var statement = connection.createStatement();
-                var resultSet = statement.executeQuery("SELECT file FROM migrations ORDER BY file DESC LIMIT 1")
-        ) {
+                var resultSet = statement.executeQuery("SELECT file FROM migrations ORDER BY file DESC LIMIT 1")) {
             return resultSet.next() ? resultSet.getString("file") : null;
         }
     }
@@ -47,7 +47,6 @@ public class MigrationRunner {
     private static void executeSQL(String sql) throws SQLException {
         var connection = DatabaseConnection.getInstance().getConnection();
         try (var stmt = connection.createStatement()) {
-
 
             String[] queries = sql.split(";");
             for (String query : queries) {
@@ -63,7 +62,8 @@ public class MigrationRunner {
     }
 
     /**
-     * Runs all SQL migration scripts from the migrations folder based on the latest applied migration.
+     * Runs all SQL migration scripts from the migrations folder based on the latest
+     * applied migration.
      */
     public static void runMigrations() throws SQLException, IOException, URISyntaxException {
         var connection = DatabaseConnection.getInstance().getConnection();
@@ -98,7 +98,8 @@ public class MigrationRunner {
     private static String loadSQLFile(String filePath) {
         ClassLoader classLoader = MigrationRunner.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(filePath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(Objects.requireNonNull(inputStream)))) {
 
             return reader.lines().collect(Collectors.joining("\n"));
 

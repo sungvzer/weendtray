@@ -6,6 +6,7 @@ import it.salvatoregargano.weendtray.acl.CredentialsServiceError;
 import it.salvatoregargano.weendtray.acl.UserDeactivatedError;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -15,6 +16,9 @@ import java.net.URL;
 public class LoginPageController {
     @FXML
     TextField username;
+
+    @FXML
+    CheckBox keepSession;
 
     @FXML
     TextField passwordField;
@@ -27,10 +31,10 @@ public class LoginPageController {
         onLogin();
     }
 
-
     public void onLogin() {
         try {
-            CredentialsService.getInstance().login(username.getText(), passwordField.getText());
+            CredentialsService.getInstance().login(username.getText(), passwordField.getText(),
+                    keepSession.isSelected());
         } catch (CredentialsServiceError e) {
             if (e instanceof BadCredentialsError) {
                 AlertFactory.createAlert(Alert.AlertType.ERROR, "Nome utente o password errati.").showAndWait();
