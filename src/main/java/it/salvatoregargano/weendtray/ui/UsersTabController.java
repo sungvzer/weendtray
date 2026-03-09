@@ -277,7 +277,8 @@ public class UsersTabController {
             Parent root = FXMLLoader.load(getClass().getResource("/it/salvatoregargano/weendtray/NewUser.fxml"));
             Stage newUserStage = new Stage();
             newUserStage.setTitle("Nuovo Utente");
-            newUserStage.setScene(new Scene(root, 400, 300));
+            newUserStage.setScene(new Scene(root));
+            newUserStage.setResizable(false);
             newUserStage.showAndWait();
 
             this.userObservableList.setAll(UserPersistence.listUsers());

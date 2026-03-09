@@ -12,6 +12,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 
 public class NewUserController {
     @FXML
@@ -28,6 +29,14 @@ public class NewUserController {
     private TextField phoneNumberField;
     @FXML
     private ChoiceBox<String> phonePlanChoiceBox;
+
+    @FXML
+    private void handlePhoneNumberInput(KeyEvent event) {
+        String c = event.getCharacter();
+        if (c.matches("\\D") || phoneNumberField.getText().length() > 10) {
+            phoneNumberField.deletePreviousChar();
+        }
+    }
 
     @FXML
     private void initialize() {
@@ -81,7 +90,7 @@ public class NewUserController {
                 .withRole(UserRole.USER)
                 .withName(nameField.getText())
                 .withSurname(surnameField.getText())
-                .withPhoneNumber(phoneNumberField.getText())
+                .withPhoneNumber("+39" + phoneNumberField.getText())
                 .withPhonePlan(PhonePlan.valueOf(phonePlanChoiceBox.getValue())).build();
 
         UserPersistence.saveUser(user);
