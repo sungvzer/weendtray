@@ -19,6 +19,7 @@
                 <TableColumn fx:id="nameColumn" text="Nome" />
                 <TableColumn fx:id="surnameColumn" text="Cognome" />
                 <TableColumn fx:id="phoneNumberColumn" text="Numero di telefono" />
+                <TableColumn fx:id="phonePlanColumn" text="Tipo di piano" />
                 <TableColumn fx:id="actionsColumn" text="Azioni" />
             </columns>
         </TableView>

@@ -38,7 +38,8 @@ public class UserPersistence {
                             rs.getString("password"),
                             rs.getString("name"),
                             rs.getString("surname"),
-                            PhonePlan.valueOf(rs.getString("plan")),
+                            PhonePlan.valueOf(rs.getString("plan")) == null ? PhonePlan.REGULAR
+                                    : PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
                             rs.getInt("active") == 1);
                 }

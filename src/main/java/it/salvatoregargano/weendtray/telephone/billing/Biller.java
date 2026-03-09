@@ -1,5 +1,6 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
+import it.salvatoregargano.weendtray.acl.PhonePlan;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.patterns.Observer;
@@ -10,33 +11,38 @@ import it.salvatoregargano.weendtray.telephone.PhoneEvent;
 
 public class Biller implements Observer<PhoneEvent> {
     private double messageCost(MessageEvent event) {
-        final double costPerCharacter = switch (event.getPlan()) {
-            case REGULAR -> 0.01;
-            case PREMIUM -> 0.0075;
-            case BUSINESS -> 0.005;
-        };
+        if (event.getPlan() == PhonePlan.BUSINESS) {
+            return 0;
+        } else if (event.getPlan() == PhonePlan.PREMIUM) {
+            return 0.0075 * event.getContent().length();
+        } else if (event.getPlan() == PhonePlan.REGULAR) {
+            return 0.01 * event.getContent().length();
+        }
 
-        return costPerCharacter * event.getContent().length();
+        return 0;
     }
 
     private double callCost(CallEvent event) {
-        final double costPerMinute = switch (event.getPlan()) {
-            case REGULAR -> 0.1;
-            case PREMIUM -> 0.05;
-            case BUSINESS -> 0.0;
-        };
+        if (event.getPlan() == PhonePlan.BUSINESS) {
+            return 0;
+        } else if (event.getPlan() == PhonePlan.PREMIUM) {
+            return 0.05 * event.getDuration().toMinutes();
+        } else if (event.getPlan() == PhonePlan.REGULAR) {
+            return 0.1 * event.getDuration().toMinutes();
+        }
 
-        return costPerMinute * event.getDuration().toMinutes();
+        return 0;
     }
 
     private double dataCost(DataUsageEvent event) {
-        final double costPerKB = switch (event.getPlan()) {
-            case REGULAR -> 0.005;
-            case PREMIUM -> 0.00025;
-            case BUSINESS -> 0;
-        };
-
-        return costPerKB * event.getDataSizeKB();
+        if (event.getPlan() == PhonePlan.BUSINESS) {
+            return 0;
+        } else if (event.getPlan() == PhonePlan.PREMIUM) {
+            return 0.00025 * event.getDataSizeKB();
+        } else if (event.getPlan() == PhonePlan.REGULAR) {
+            return 0.005 * event.getDataSizeKB();
+        }
+        return 0;
     }
 
     @Override

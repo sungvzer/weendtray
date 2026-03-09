@@ -40,6 +40,8 @@ public class UsersTabController {
     @FXML
     private TableColumn<User, String> phoneNumberColumn;
     @FXML
+    private TableColumn<User, String> phonePlanColumn;
+    @FXML
     private TableView<User> tableView;
     @FXML
     private TextField searchField;
@@ -53,6 +55,38 @@ public class UsersTabController {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        phonePlanColumn.setCellValueFactory(
+                cellData -> {
+                    if (cellData.getValue().getRole() == UserRole.ADMIN) {
+                        return null;
+                    } else {
+                        RegularUser regularUser = (RegularUser) cellData.getValue();
+                        String planName = regularUser.getPhonePlan().name;
+                        return new ObservableValue<String>() {
+                            @Override
+                            public void addListener(ChangeListener<? super String> listener) {
+                            }
+
+                            @Override
+                            public void removeListener(ChangeListener<? super String> listener) {
+                            }
+
+                            @Override
+                            public String getValue() {
+                                return planName;
+                            }
+
+                            @Override
+                            public void addListener(InvalidationListener listener) {
+                            }
+
+                            @Override
+                            public void removeListener(InvalidationListener listener) {
+                            }
+                        };
+                    }
+                });
+
         phoneNumberColumn.setCellValueFactory(
                 cellData -> {
                     if (cellData.getValue().getRole() == UserRole.ADMIN) {
@@ -151,8 +185,6 @@ public class UsersTabController {
                         } else {
                             User currentUser = getTableRow().getItem();
 
-                            UserRole currentUserRole = currentUser.getRole();
-
                             if (currentUser.isActive()) {
                                 getTableRow().setOpacity(1);
                                 deactivateButton.setVisible(true);
@@ -174,7 +206,6 @@ public class UsersTabController {
             }
         };
 
-        // Infine, assegniamo questa logica alla colonna
         actionsColumn.setCellFactory(cellFactory);
 
         this.userObservableList = FXCollections.observableArrayList(users);
