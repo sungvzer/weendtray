@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Main extends Application {
     public static final String executionId = UUID.randomUUID().toString();
@@ -50,9 +53,7 @@ public class Main extends Application {
             homePage = getClass().getResource("LoginPage.fxml");
         }
 
-        ResourceBundle bundle = ResourceBundle.getBundle(I18N_BUNDLE_NAME, I18N_DEFAULT_LOCALE);
         FXMLLoader loader = new FXMLLoader(homePage);
-        loader.setResources(bundle);
         VBox root = loader.load();
         Scene scene = SceneFactory.createScene(root);
 

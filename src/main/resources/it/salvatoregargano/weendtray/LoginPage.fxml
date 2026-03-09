@@ -8,16 +8,16 @@
 <?import javafx.scene.text.Text?>
 <VBox alignment="CENTER" spacing="16" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="it.salvatoregargano.weendtray.ui.LoginPageController" onKeyPressed="#onKeyPressed">
-    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%loginPage.welcome"/>
+    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Benvenuto in WeendTray, accedi o registrati per continuare."/>
     <VBox alignment="CENTER" spacing="16">
         <VBox.margin>
             <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
         </VBox.margin>
-        <TextField fx:id="username" promptText="%common.username"/>
-        <PasswordField fx:id="passwordField" promptText="%common.password"/>
+        <TextField fx:id="username" promptText="Nome utente"/>
+        <PasswordField fx:id="passwordField" promptText="Password"/>
         <HBox spacing="8">
-            <Button HBox.hgrow="ALWAYS" onMouseClicked="#onLogin" text="%loginPage.login" maxWidth="Infinity"/>
-            <Button HBox.hgrow="ALWAYS" onMouseClicked="#onLogin" text="%loginPage.signup" maxWidth="Infinity"/>
+            <Button HBox.hgrow="ALWAYS" onMouseClicked="#onLogin" text="Accedi" maxWidth="Infinity"/>
+            <Button HBox.hgrow="ALWAYS" onMouseClicked="#onSignup" text="Registrati" maxWidth="Infinity"/>
         </HBox>
     </VBox>
 </VBox>

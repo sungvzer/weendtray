@@ -5,6 +5,7 @@ import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Class to persist users to the database.
@@ -72,7 +73,7 @@ public class UserPersistence {
         try (var statement = DatabaseConnection.
                 getInstance().
                 getConnection().
-                prepareStatement("UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ? WHERE `id` = ?")) {
+                prepareStatement("UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `id` = ?")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -85,7 +86,9 @@ public class UserPersistence {
                 statement.setString(6, "REGULAR");
                 statement.setString(7, null);
             }
-            statement.setInt(8, user.getId());
+            statement.setBoolean(8, user.isActive());
+            statement.setInt(9, user.getId());
+
             statement.execute();
         } catch (SQLException e) {
             logger.error("Error while updating user: " + e.getMessage());
@@ -181,6 +184,49 @@ public class UserPersistence {
         }
 
         logger.info("Promoted user: " + user.getId() + " (" + user.getUsername() + ")");
+    }
+
+    public static ArrayList<User> listUsers() {
+        ArrayList<User> users = new ArrayList<>();
+
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.
+                getInstance().
+                getConnection().
+                prepareStatement("SELECT * FROM `user`")) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                var role = UserRole.valueOf(rs.getString("role"));
+                if (role == UserRole.USER) {
+                    User u = new RegularUser(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("surname"),
+                            PhonePlan.valueOf(rs.getString("plan")),
+                            rs.getString("phonenumber"),
+                            rs.getInt("active") == 1
+                    );
+                }
+
+                User u = new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        role,
+                        rs.getInt("active") == 1
+                );
+
+                users.add(u);
+            }
+        } catch (SQLException e) {
+            logger.error("Error while listing users: " + e.getMessage());
+        }
+        return users;
+
     }
 
     public static User getUserByUsername(String username) {

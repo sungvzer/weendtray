@@ -1,6 +1,9 @@
 package it.salvatoregargano.weendtray.ui;
 
+import it.salvatoregargano.weendtray.acl.BadCredentialsError;
 import it.salvatoregargano.weendtray.acl.CredentialsService;
+import it.salvatoregargano.weendtray.acl.CredentialsServiceError;
+import it.salvatoregargano.weendtray.acl.UserDeactivatedError;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -26,14 +29,22 @@ public class LoginPageController {
 
 
     public void onLogin() {
-        boolean validCredentials = CredentialsService.getInstance().checkUserCredentials(username.getText(), passwordField.getText());
-
-        if (!validCredentials) {
-            AlertFactory.createAlert(Alert.AlertType.ERROR, "Nome utente o password errati.").showAndWait();
+        try {
+            CredentialsService.getInstance().login(username.getText(), passwordField.getText());
+        } catch (CredentialsServiceError e) {
+            if (e instanceof BadCredentialsError) {
+                AlertFactory.createAlert(Alert.AlertType.ERROR, "Nome utente o password errati.").showAndWait();
+            }
+            if (e instanceof UserDeactivatedError) {
+                AlertFactory.createAlert(Alert.AlertType.ERROR, "L'utenza non è attiva.").showAndWait();
+            }
             return;
         }
 
         URL url = getClass().getResource("/it/salvatoregargano/weendtray/HomePage.fxml");
         SceneManager.changeNodeSceneRootOrExit(username, url);
+    }
+
+    public void onSignup() {
     }
 }

@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<VBox alignment="CENTER" spacing="16" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.salvatoregargano.weendtray.ui.LoginPageController">
-    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="HELLOOOOOO"/>
-</VBox>
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.salvatoregargano.weendtray.ui.HomePageController">
+    <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.topAnchor="0">
+        <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
+            <Text fx:id="helloField" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+            <Region prefHeight="0.0" HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false" text="Esci" onMouseClicked="#onLogout"/>
+        </ToolBar>
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+            <Tab closable="false" text="Utenti" fx:id="usersTab"/>
+        </TabPane>
+    </VBox>
+</AnchorPane>
