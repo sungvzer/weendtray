@@ -73,7 +73,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
-                "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`) VALUES (?, ?, ?, ?, ?, ?) RETURNING `id`")) {
+                "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`, `plan`) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING `id`")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -82,8 +82,10 @@ public class UserPersistence {
             if (user.getRole() == UserRole.USER) {
                 var regularUser = (RegularUser) user;
                 statement.setString(6, regularUser.getPhoneNumber());
+                statement.setString(7, regularUser.getPhonePlan().toString());
             } else {
                 statement.setString(6, null);
+                statement.setString(7, null);
             }
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
@@ -255,6 +257,21 @@ public class UserPersistence {
         }
         return users;
 
+    }
+
+    public static boolean isPhoneNumberInUse(String phoneNumber) {
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT COUNT(*) FROM `user` WHERE `phonenumber` = ?")) {
+            statement.setString(1, phoneNumber);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            logger.error("Error while checking if phone number is in use: " + e.getMessage());
+        }
+        return false;
     }
 
     public static User getUserByUsername(String username) {

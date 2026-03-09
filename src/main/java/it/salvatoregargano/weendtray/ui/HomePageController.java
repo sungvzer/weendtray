@@ -1,5 +1,8 @@
 package it.salvatoregargano.weendtray.ui;
 
+import java.io.IOException;
+import java.net.URL;
+
 import it.salvatoregargano.weendtray.acl.CredentialsService;
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
@@ -11,16 +14,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
-import java.net.URL;
-
 public class HomePageController {
     @FXML
     Text helloField;
 
     @FXML
     Tab usersTab;
-
 
     public void initialize() {
         final User user = CredentialsService.getInstance().getLoggedUser();
@@ -34,12 +33,13 @@ public class HomePageController {
 
         usersTab.selectedProperty().addListener((_, _, isNowSelected) -> {
             if (isNowSelected && usersTab.getContent() == null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/salvatoregargano/weendtray/UsersTab.fxml"));
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/it/salvatoregargano/weendtray/UsersTab.fxml"));
                 try {
                     Node content = loader.load();
                     usersTab.setContent(content);
                 } catch (IOException e) {
-                    CombinedLogger.getInstance().error("Could not load Users tab.");
+                    CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
                 }
             }
         });
@@ -50,7 +50,7 @@ public class HomePageController {
                 Node content = loader.load();
                 usersTab.setContent(content);
             } catch (IOException e) {
-                CombinedLogger.getInstance().error("Could not load Users tab.");
+                CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
             }
         }
     }

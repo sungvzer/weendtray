@@ -11,6 +11,10 @@ public class PhonePlan {
         this.name = name;
     }
 
+    public String toString() {
+        return name;
+    }
+
     public static PhonePlan[] values() {
         return new PhonePlan[] { REGULAR, PREMIUM, BUSINESS };
     }
