@@ -1,11 +1,13 @@
 package it.salvatoregargano.weendtray.ui;
 
 import java.io.IOException;
+import java.net.URL;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -28,6 +30,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -131,16 +134,40 @@ public class UsersTabController {
             public TableCell<User, Void> call(final TableColumn<User, Void> param) {
                 return new TableCell<>() {
                     private final Button openButton = new Button("Apri");
-                    private final Button deactivateButton = new Button("Disattiva");
-                    private final Button activateButton = new Button("Attiva");
+                    private final Button deactivateButton = new Button("Disdici");
+                    private final Button activateButton = new Button("Riattiva");
                     private final HBox pane = new HBox(10, openButton, deactivateButton, activateButton);
 
                     {
                         pane.setAlignment(Pos.CENTER);
 
+                        ImageView openIcon = new ImageView(getClass().getResource("/icons/open_in_new.png").toString());
+                        openIcon.setFitWidth(16);
+                        openIcon.setFitHeight(16);
+                        openButton.setGraphic(openIcon);
+
                         openButton.setOnAction((ActionEvent event) -> {
                             User selectedUser = getTableView().getItems().get(getIndex());
-                            System.out.println("Clicked on user: " + selectedUser.getUsername());
+                            try {
+                                URL userInfoFXML = getClass()
+                                        .getResource("/it/salvatoregargano/weendtray/UserInfo.fxml");
+                                FXMLLoader loader = new FXMLLoader(userInfoFXML);
+                                Parent root = loader.load();
+                                UserInfoController userInfoController = loader.getController();
+                                userInfoController.loadUser(selectedUser);
+
+                                Stage userStage = new Stage();
+                                userStage.setTitle("Utente: " + selectedUser.getUsername());
+                                userStage.setScene(new Scene(root));
+                                userStage.showAndWait();
+                            } catch (IOException e) {
+                                AlertFactory
+                                        .createAlert(Alert.AlertType.ERROR,
+                                                "Errore non recuperabile, l'applicazione terminerà una volta chiuso questo menù.")
+                                        .showAndWait();
+                                CombinedLogger.getInstance().error("Could not load user info: " + e.getMessage());
+                                System.exit(1);
+                            }
                         });
 
                         deactivateButton.setOnAction((ActionEvent event) -> {
@@ -160,7 +187,7 @@ public class UsersTabController {
 
                             var result = AlertFactory
                                     .createAlert(Alert.AlertType.CONFIRMATION,
-                                            "Sicuro di voler disattivare l'utente " + selectedUser.getUsername() + "?")
+                                            "Sicuro di voler disdire l'utenza " + selectedUser.getUsername() + "?")
                                     .showAndWait();
                             if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                                 final var userIndex = userObservableList.indexOf(selectedUser);
@@ -194,8 +221,8 @@ public class UsersTabController {
 
                             if (currentUser.isActive()) {
                                 getTableRow().setOpacity(1);
-                                deactivateButton.setVisible(true);
-                                deactivateButton.setManaged(true);
+                                deactivateButton.setVisible(!currentUser.isAdminProperty().get());
+                                deactivateButton.setManaged(!currentUser.isAdminProperty().get());
                                 activateButton.setManaged(false);
                                 activateButton.setVisible(false);
                             } else {

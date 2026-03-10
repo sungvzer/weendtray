@@ -1,5 +1,7 @@
 package it.salvatoregargano.weendtray;
 
+import java.awt.Taskbar;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -113,6 +115,13 @@ public class Main extends Application {
         stage.setWidth(600);
         stage.setTitle("WeendTray");
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));
+
+        if (Taskbar.isTaskbarSupported()) {
+            var taskbar = Taskbar.getTaskbar();
+            final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+            var dockIcon = defaultToolkit.getImage(getClass().getResource("images/logo.png"));
+            taskbar.setIconImage(dockIcon);
+        }
         stage.show();
     }
 }
