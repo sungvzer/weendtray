@@ -1,9 +1,9 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
+import java.sql.SQLException;
+
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
-
-import java.sql.SQLException;
 
 public class WalletService {
     private static WalletService instance;
@@ -19,27 +19,31 @@ public class WalletService {
     }
 
     public Wallet getWallet(int userId) throws SQLException {
-        var statement = DatabaseConnection.getInstance().getConnection().createStatement();
-        var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE user_id = " + userId);
-        if (resultSet.next()) {
-            return new Wallet(
-                    resultSet.getInt("id"),
-                    resultSet.getDouble("balance"),
-                    resultSet.getInt("user_id")
-            );
-        } else {
-            // Create a new wallet for the user
-            var createStatement = DatabaseConnection.getInstance().getConnection().prepareStatement("INSERT INTO wallet (balance, user_id) VALUES (0, ?) RETURNING id, balance, user_id");
-            createStatement.setInt(1, userId);
-            resultSet = createStatement.executeQuery();
+        try (var preparedStatement = DatabaseConnection.getInstance().getConnection()
+                .prepareStatement("SELECT * FROM wallet WHERE user_id = ?")) {
+            preparedStatement.setInt(1, userId);
+            var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return new Wallet(
                         resultSet.getInt("id"),
                         resultSet.getDouble("balance"),
-                        resultSet.getInt("user_id")
-                );
+                        resultSet.getInt("user_id"));
+            } else {
+                // Create a new wallet for the user
+                var createStatement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                        "INSERT INTO wallet (balance, user_id) VALUES (0, ?)");
+                createStatement.setInt(1, userId);
+                createStatement.executeUpdate();
+                resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return new Wallet(
+                            resultSet.getInt("id"),
+                            resultSet.getDouble("balance"),
+                            resultSet.getInt("user_id"));
+                }
             }
         }
+
         return null;
     }
 

@@ -2,12 +2,15 @@ package it.salvatoregargano.weendtray.ui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.telephone.billing.Wallet;
+import it.salvatoregargano.weendtray.telephone.billing.WalletService;
 import it.salvatoregargano.weendtray.ui.icons.IconFactory;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
@@ -52,6 +55,8 @@ public class UsersTabController {
     @FXML
     private TableColumn<User, String> phonePlanColumn;
     @FXML
+    private TableColumn<User, String> creditColumn;
+    @FXML
     private TableView<User> tableView;
     @FXML
     private TextField searchField;
@@ -65,6 +70,50 @@ public class UsersTabController {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+
+        creditColumn.setCellValueFactory(
+                cellData -> {
+                    if (cellData.getValue().getRole() == UserRole.ADMIN) {
+                        return null;
+                    }
+
+                    try {
+                        Wallet wallet = WalletService.getInstance().getWallet(cellData.getValue().getId());
+                        return new ObservableValue<String>() {
+                            @Override
+                            public void addListener(ChangeListener<? super String> listener) {
+                            }
+
+                            @Override
+                            public void removeListener(ChangeListener<? super String> listener) {
+                            }
+
+                            @Override
+                            public String getValue() {
+                                return String.format("%.2f €", wallet.getBalance());
+                            }
+
+                            @Override
+                            public void addListener(InvalidationListener listener) {
+                            }
+
+                            @Override
+                            public void removeListener(InvalidationListener listener) {
+                            }
+                        };
+                    } catch (SQLException e) {
+                        CombinedLogger.getInstance().error("Could not retrieve wallet for user "
+                                + cellData.getValue().getUsername() + ": " + e.getMessage());
+                        AlertFactory
+                                .createAlert(Alert.AlertType.ERROR,
+                                        "Errore non recuperabile, l'applicazione terminerà una volta chiuso questo menù.")
+                                .showAndWait();
+                        System.exit(1);
+                    }
+
+                    return null;
+                });
+
         phonePlanColumn.setCellValueFactory(
                 cellData -> {
                     if (cellData.getValue().getRole() == UserRole.ADMIN) {
