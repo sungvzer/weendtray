@@ -20,6 +20,10 @@ public class User {
         return isAdmin;
     }
 
+    public String getFullName() {
+        return name + " " + surname;
+    }
+
     public User(String username, String password, String name, String surname, UserRole role, boolean active) {
         this(-1, username, password, name, surname, role, active);
     }

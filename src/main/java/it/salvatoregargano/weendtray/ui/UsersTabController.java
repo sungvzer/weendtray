@@ -8,6 +8,7 @@ import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.ui.icons.IconFactory;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -141,10 +142,22 @@ public class UsersTabController {
                     {
                         pane.setAlignment(Pos.CENTER);
 
-                        ImageView openIcon = new ImageView(getClass().getResource("/icons/open_in_new.png").toString());
+                        ImageView openIcon = new ImageView(IconFactory.getIconWithColor("open_in_new", "#000000"));
                         openIcon.setFitWidth(16);
                         openIcon.setFitHeight(16);
                         openButton.setGraphic(openIcon);
+
+                        ImageView deactivateIcon = new ImageView(
+                                IconFactory.getIconWithColor("phone_disabled", "#FF0000"));
+                        deactivateIcon.setFitWidth(16);
+                        deactivateIcon.setFitHeight(16);
+                        deactivateButton.setGraphic(deactivateIcon);
+
+                        ImageView activateIcon = new ImageView(
+                                IconFactory.getIconWithColor("phone_enabled", "#00FF00"));
+                        activateIcon.setFitWidth(16);
+                        activateIcon.setFitHeight(16);
+                        activateButton.setGraphic(activateIcon);
 
                         openButton.setOnAction((ActionEvent event) -> {
                             User selectedUser = getTableView().getItems().get(getIndex());
@@ -160,6 +173,9 @@ public class UsersTabController {
                                 userStage.setTitle("Utente: " + selectedUser.getUsername());
                                 userStage.setScene(new Scene(root));
                                 userStage.showAndWait();
+
+                                userObservableList.set(userObservableList.indexOf(selectedUser),
+                                        UserPersistence.getUserById(selectedUser.getId()));
                             } catch (IOException e) {
                                 AlertFactory
                                         .createAlert(Alert.AlertType.ERROR,

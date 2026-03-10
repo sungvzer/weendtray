@@ -7,6 +7,7 @@ import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.UserBuilder;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
+import it.salvatoregargano.weendtray.utils.StringChecker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
@@ -58,15 +59,16 @@ public class NewUserController {
             return;
         }
 
-        if (phoneNumberField.getText().length() != 10 || !phoneNumberField.getText().matches("\\d+")) {
-            AlertFactory.createAlert(AlertType.ERROR, "Il numero di telefono deve essere composto da 10 cifre.")
-                    .showAndWait();
+        String phoneValidationResult = StringChecker.phoneNumberChecker().check(phoneNumberField.getText());
+        if (phoneValidationResult != null) {
+            AlertFactory.createAlert(AlertType.ERROR, phoneValidationResult).showAndWait();
             return;
         }
 
-        if (passwordField.getText().length() < 8) {
-            AlertFactory.createAlert(AlertType.ERROR, "La password deve essere lunga almeno 8 caratteri.")
-                    .showAndWait();
+        String passwordValidationResult = StringChecker.passwordChecker().check(passwordField.getText());
+
+        if (passwordValidationResult != null) {
+            AlertFactory.createAlert(AlertType.ERROR, passwordValidationResult).showAndWait();
             return;
         }
 

@@ -1,5 +1,7 @@
 package it.salvatoregargano.weendtray.acl;
 
+import java.util.Optional;
+
 public class UserBuilder {
     private String username;
     private String hashedPassword;
@@ -8,6 +10,12 @@ public class UserBuilder {
     private String surname;
     private String phoneNumber;
     private PhonePlan phonePlan;
+    private Optional<Integer> id;
+
+    public UserBuilder withId(int id) {
+        this.id = Optional.of(id);
+        return this;
+    }
 
     public UserBuilder withName(String name) {
         this.name = name;
@@ -52,9 +60,11 @@ public class UserBuilder {
     public User build() {
         if (role == UserRole.USER) {
             var regularUser = new RegularUser(username, hashedPassword, name, surname, phonePlan, phoneNumber, true);
+            regularUser.setId(id.orElse(-1));
             return regularUser;
         } else {
             var user = new User(username, hashedPassword, name, surname, role, true);
+            user.setId(id.orElse(-1));
             return user;
         }
     }
