@@ -1,11 +1,15 @@
 package it.salvatoregargano.weendtray.terminal.screens;
 
-import it.salvatoregargano.weendtray.acl.*;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserPersistence;
+import it.salvatoregargano.weendtray.acl.UserRole;
+import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand> {
     public AdminUserScreen(User user) {
@@ -49,7 +53,8 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
             System.out.print("Phone number: ");
             var phoneNumber = br.readLine();
 
-            UserPersistence.saveUser(new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber, true));
+            UserPersistence.saveUser(
+                    new RegularUser(username, hashedPassword, name, surname, PhonePlan.REGULAR, phoneNumber, true));
             System.out.println("User created.");
         } catch (IOException e) {
             System.out.println("An error occurred while reading the input.");
@@ -158,7 +163,6 @@ public class AdminUserScreen extends UserScreen<AdminUserScreen.AdminUserCommand
 
         return true;
     }
-
 
     @Override
     protected AdminUserCommand parseCommand(String command) {

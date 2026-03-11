@@ -1,5 +1,7 @@
 package it.salvatoregargano.weendtray.acl;
 
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+
 public class RegularUser extends User {
     private PhonePlan phonePlan;
     private String phoneNumber;

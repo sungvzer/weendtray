@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 /**
  * Class to persist users to the database.

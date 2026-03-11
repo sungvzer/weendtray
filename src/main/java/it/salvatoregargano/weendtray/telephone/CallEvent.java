@@ -1,8 +1,8 @@
 package it.salvatoregargano.weendtray.telephone;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
-
 import java.time.Duration;
+
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 // Call Event
 public class CallEvent extends PhoneEvent {
@@ -19,6 +19,7 @@ public class CallEvent extends PhoneEvent {
 
     @Override
     public String getDescription() {
-        return "[" + getUUID() + "][CALL] from " + getSourceNumber() + " to " + getTargetNumber() + " (" + duration.toMinutes() + " minutes)";
+        return "[" + getUUID() + "][CALL] from " + getSourceNumber() + " to " + getTargetNumber() + " ("
+                + duration.toMinutes() + " minutes)";
     }
 }
