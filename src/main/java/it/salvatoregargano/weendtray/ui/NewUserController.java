@@ -3,6 +3,7 @@ package it.salvatoregargano.weendtray.ui;
 import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserBuilder;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
@@ -29,6 +30,17 @@ public class NewUserController {
     @FXML
     private TextField phoneNumberField;
     @FXML
+    private TextField addressField;
+    @FXML
+    private TextField cityField;
+    @FXML
+    private TextField stateField;
+    @FXML
+    private TextField postalCodeField;
+    @FXML
+    private TextField countryField;
+
+    @FXML
     private ChoiceBox<String> phonePlanChoiceBox;
 
     @FXML
@@ -54,7 +66,9 @@ public class NewUserController {
     @FXML
     private void handleSaveUser() {
         if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty() || nameField.getText().isEmpty()
-                || surnameField.getText().isEmpty() || phoneNumberField.getText().isEmpty()) {
+                || surnameField.getText().isEmpty() || phoneNumberField.getText().isEmpty()
+                || addressField.getText().isEmpty() || cityField.getText().isEmpty() || stateField.getText().isEmpty()
+                || postalCodeField.getText().isEmpty() || countryField.getText().isEmpty()) {
             AlertFactory.createAlert(AlertType.ERROR, "Tutti i campi devono essere compilati.").showAndWait();
             return;
         }
@@ -87,13 +101,17 @@ public class NewUserController {
             return;
         }
 
+        UserAddress address = new UserAddress(addressField.getText(), cityField.getText(), postalCodeField.getText(),
+                countryField.getText(), stateField.getText());
+
         RegularUser user = (RegularUser) new UserBuilder().withPlainTextPassword(passwordField.getText())
                 .withUsername(usernameField.getText())
                 .withRole(UserRole.USER)
                 .withName(nameField.getText())
                 .withSurname(surnameField.getText())
                 .withPhoneNumber("+39" + phoneNumberField.getText())
-                .withPhonePlan(PhonePlan.valueOf(phonePlanChoiceBox.getValue())).build();
+                .withPhonePlan(PhonePlan.valueOf(phonePlanChoiceBox.getValue()))
+                .withAddress(address).build();
 
         UserPersistence.saveUser(user);
         surnameField.getScene().getWindow().hide();

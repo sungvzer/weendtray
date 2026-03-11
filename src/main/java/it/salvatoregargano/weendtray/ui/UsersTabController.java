@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
@@ -57,6 +58,8 @@ public class UsersTabController {
     @FXML
     private TableColumn<User, String> creditColumn;
     @FXML
+    private TableColumn<User, String> addressColumn;
+    @FXML
     private TableView<User> tableView;
     @FXML
     private TextField searchField;
@@ -70,6 +73,38 @@ public class UsersTabController {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+
+        addressColumn.setCellValueFactory(cellData -> {
+
+            if (cellData.getValue().getRole() == UserRole.ADMIN) {
+                return null;
+            }
+
+            UserAddress address = ((RegularUser) cellData.getValue()).getAddress();
+            return new ObservableValue<String>() {
+                @Override
+                public void addListener(ChangeListener<? super String> listener) {
+                }
+
+                @Override
+                public void removeListener(ChangeListener<? super String> listener) {
+                }
+
+                @Override
+                public String getValue() {
+                    return address.toString();
+                }
+
+                @Override
+                public void addListener(InvalidationListener listener) {
+                }
+
+                @Override
+                public void removeListener(InvalidationListener listener) {
+                }
+            };
+
+        });
 
         creditColumn.setCellValueFactory(
                 cellData -> {
@@ -335,6 +370,13 @@ public class UsersTabController {
                         return true;
                     }
 
+                    if (regularUser.getPhonePlan().toString().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+
+                    if (regularUser.getAddress().toString().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
                 }
                 return false;
             });

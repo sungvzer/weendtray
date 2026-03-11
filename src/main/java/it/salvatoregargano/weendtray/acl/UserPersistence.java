@@ -36,7 +36,8 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM `user` WHERE `id` = ?")) {
+                .prepareStatement(
+                        "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id WHERE `user`.`id` = ?")) {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -51,7 +52,13 @@ public class UserPersistence {
                             PhonePlan.valueOf(rs.getString("plan")) == null ? PhonePlan.REGULAR
                                     : PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
-                            rs.getInt("active") == 1);
+                            rs.getInt("active") == 1,
+                            new UserAddress(
+                                    rs.getString("address"),
+                                    rs.getString("city"),
+                                    rs.getString("postal_code"),
+                                    rs.getString("country"),
+                                    rs.getString("state")));
                 }
 
                 return new User(
@@ -108,6 +115,88 @@ public class UserPersistence {
     }
 
     /**
+     * Saves the address of a user to the database. This method is used to save the
+     * address of a user to the database. It checks if the user is a regular user
+     * and if it has an address. If the user is a regular user and has an address,
+     * it saves the address to the database. If the user is not a regular user or
+     * does not have an address, it does nothing.
+     * 
+     * @param user
+     * @throws MissingAddressException if the user is a regular user and does not
+     *                                 have an address
+     */
+    private static void saveUserAddress(User user) throws MissingAddressException {
+        var logger = CombinedLogger.getInstance();
+
+        if (user.getId() == -1) {
+            return;
+        }
+
+        if (!(user instanceof RegularUser regularUser)) {
+            return;
+        }
+
+        if (regularUser.getAddress() == null) {
+            throw new MissingAddressException("The user is a regular user but does not have an address.");
+        }
+
+        boolean hasAddress = false;
+
+        // Check if the user already has an address in the database
+        try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                "SELECT COUNT(*) FROM `user_address` WHERE `user_id` = ?")) {
+            statement.setInt(1, user.getId());
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                hasAddress = rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            logger.error("Error while checking user address: " + e.getMessage());
+        }
+
+        if (!hasAddress) {
+            insertUserAddress(regularUser);
+        } else {
+            updateUserAddress(regularUser);
+        }
+    }
+
+    private static void updateUserAddress(RegularUser regularUser) {
+        var logger = CombinedLogger.getInstance();
+        try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                "UPDATE `user_address` SET `address` = ?, `city` = ?, `postal_code` = ?, `country` = ?, `state` = ? WHERE `user_id` = ?")) {
+            statement.setString(1, regularUser.getAddress().getAddress());
+            statement.setString(2, regularUser.getAddress().getCity());
+            statement.setString(3, regularUser.getAddress().getPostalCode());
+            statement.setString(4, regularUser.getAddress().getCountry());
+            statement.setString(5, regularUser.getAddress().getState());
+            statement.setInt(6, regularUser.getId());
+            statement.execute();
+        } catch (SQLException e) {
+            logger.error("Error while updating user address: " + e.getMessage());
+
+        }
+    }
+
+    private static void insertUserAddress(RegularUser regularUser) {
+        var logger = CombinedLogger.getInstance();
+
+        try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
+                "INSERT INTO `user_address` (`user_id`, `address`, `city`, `postal_code`, `country`, `state`) VALUES (?, ?, ?, ?, ?, ?)")) {
+            statement.setInt(1, regularUser.getId());
+            statement.setString(2, regularUser.getAddress().getAddress());
+            statement.setString(3, regularUser.getAddress().getCity());
+            statement.setString(4, regularUser.getAddress().getPostalCode());
+            statement.setString(5, regularUser.getAddress().getCountry());
+            statement.setString(6, regularUser.getAddress().getState());
+            statement.execute();
+        } catch (SQLException e) {
+            logger.error("Error while saving user address: " + e.getMessage());
+
+        }
+    }
+
+    /**
      * Updates a user in the database.
      * <p>
      * The user is updated based on the id.
@@ -122,7 +211,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
-                "UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `id` = ?")) {
+                "UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `user`.`id` = ?")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -150,7 +239,8 @@ public class UserPersistence {
     public static RegularUser getUserByPhoneNumber(String userPhoneNumber) {
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM `user` WHERE `phonenumber` = ?")) {
+                .prepareStatement(
+                        "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id WHERE `phonenumber` = ?")) {
             statement.setString(1, userPhoneNumber);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -162,7 +252,13 @@ public class UserPersistence {
                         rs.getString("surname"),
                         PhonePlan.valueOf(rs.getString("plan")),
                         rs.getString("phonenumber"),
-                        rs.getInt("active") == 1);
+                        rs.getInt("active") == 1,
+                        new UserAddress(
+                                rs.getString("address"),
+                                rs.getString("city"),
+                                rs.getString("postal_code"),
+                                rs.getString("country"),
+                                rs.getString("state")));
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by phone number: " + e.getMessage());
@@ -178,14 +274,40 @@ public class UserPersistence {
      */
     public static void saveUser(User user) {
         var logger = CombinedLogger.getInstance();
+        try {
+            DatabaseConnection.getInstance().getConnection().setAutoCommit(false);
 
-        if (user.getId() == -1) {
-            createUser(user);
-        } else {
-            updateUserById(user);
+            if (user.getId() == -1) {
+                createUser(user);
+            } else {
+                updateUserById(user);
+            }
+
+            saveUserAddress(user);
+
+            DatabaseConnection.getInstance().getConnection().commit();
+            logger.info("User saved: " + user.getId());
+        } catch (SQLException e) {
+            logger.error("Error while saving user: " + e.getMessage());
+            try {
+                DatabaseConnection.getInstance().getConnection().rollback();
+            } catch (SQLException ex) {
+                logger.error("Error while rolling back transaction: " + ex.getMessage());
+            }
+        } catch (MissingAddressException e) {
+            logger.error("Error while saving user: " + e.getMessage());
+            try {
+                DatabaseConnection.getInstance().getConnection().rollback();
+            } catch (SQLException ex) {
+                logger.error("Error while rolling back transaction: " + ex.getMessage());
+            }
+        } finally {
+            try {
+                DatabaseConnection.getInstance().getConnection().setAutoCommit(true);
+            } catch (SQLException e) {
+                logger.error("Error while setting auto commit to true: " + e.getMessage());
+            }
         }
-
-        logger.info("User saved: " + user.getId());
     }
 
     /**
@@ -222,7 +344,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("UPDATE `user` SET `role` = ? WHERE `id` = ?")) {
+                .prepareStatement("UPDATE `user` SET `role` = ? WHERE `user`.`id` = ?")) {
             statement.setString(1, UserRole.ADMIN.toString());
             statement.setInt(2, user.getId());
             statement.execute();
@@ -244,7 +366,8 @@ public class UserPersistence {
 
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM `user`")) {
+                .prepareStatement(
+                        "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id")) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 var role = UserRole.valueOf(rs.getString("role"));
@@ -257,7 +380,13 @@ public class UserPersistence {
                             rs.getString("surname"),
                             PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
-                            rs.getInt("active") == 1);
+                            rs.getInt("active") == 1,
+                            new UserAddress(
+                                    rs.getString("address"),
+                                    rs.getString("city"),
+                                    rs.getString("postal_code"),
+                                    rs.getString("country"),
+                                    rs.getString("state")));
                     users.add(u);
                     continue;
                 }
@@ -315,7 +444,8 @@ public class UserPersistence {
     public static User getUserByUsername(String username) {
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM `user` WHERE `username` = ?")) {
+                .prepareStatement(
+                        "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id WHERE `username` = ?")) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -329,7 +459,13 @@ public class UserPersistence {
                             rs.getString("surname"),
                             PhonePlan.valueOf(rs.getString("plan")),
                             rs.getString("phonenumber"),
-                            rs.getInt("active") == 1);
+                            rs.getInt("active") == 1,
+                            new UserAddress(
+                                    rs.getString("address"),
+                                    rs.getString("city"),
+                                    rs.getString("postal_code"),
+                                    rs.getString("country"),
+                                    rs.getString("state")));
                 }
 
                 return new User(
@@ -341,7 +477,9 @@ public class UserPersistence {
                         role,
                         rs.getInt("active") == 1);
             }
-        } catch (SQLException e) {
+        } catch (
+
+        SQLException e) {
             logger.error("Error while getting user by username: " + e.getMessage());
         }
         return null;
@@ -363,7 +501,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("UPDATE `user` SET `active` = ? WHERE `id` = ?")) {
+                .prepareStatement("UPDATE `user` SET `active` = ? WHERE `user`.`id` = ?")) {
             statement.setInt(1, user.isActive() ? 0 : 1);
             statement.setInt(2, user.getId());
             statement.execute();
@@ -385,7 +523,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection()
-                .prepareStatement("UPDATE `user` SET `plan` = ? WHERE `id` = ?")) {
+                .prepareStatement("UPDATE `user` SET `plan` = ? WHERE `user`.`id` = ?")) {
             statement.setString(1, phonePlan.toString());
             statement.setInt(2, user.getId());
             statement.execute();

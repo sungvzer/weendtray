@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 import it.salvatoregargano.weendtray.ui.icons.IconFactory;
@@ -33,6 +34,16 @@ public class UserInfoController {
     private HBox phoneHBox;
     @FXML
     private HBox planHBox;
+    @FXML
+    private HBox addressHBox;
+    @FXML
+    private HBox cityHBox;
+    @FXML
+    private HBox stateHBox;
+    @FXML
+    private HBox postalCodeHBox;
+    @FXML
+    private HBox countryHBox;
 
     @FXML
     private ImageView editUserIcon;
@@ -66,6 +77,16 @@ public class UserInfoController {
     private PasswordField passwordField;
     @FXML
     private ChoiceBox<String> phonePlanChoiceBox;
+    @FXML
+    private TextField addressTextField;
+    @FXML
+    private TextField cityTextField;
+    @FXML
+    private TextField stateTextField;
+    @FXML
+    private TextField postalCodeTextField;
+    @FXML
+    private TextField countryTextField;
 
     @FXML
     private void initialize() {
@@ -87,6 +108,11 @@ public class UserInfoController {
             phoneTextField.setEditable(newVal);
             passwordField.setEditable(newVal);
             phonePlanChoiceBox.setDisable(!newVal);
+            addressTextField.setEditable(newVal);
+            cityTextField.setEditable(newVal);
+            stateTextField.setEditable(newVal);
+            postalCodeTextField.setEditable(newVal);
+            countryTextField.setEditable(newVal);
         });
 
         disableUserIcon.setImage(IconFactory.getIconWithColor("phone_disabled", "#FF0000"));
@@ -144,6 +170,9 @@ public class UserInfoController {
         if (!user.isAdminProperty().get()) {
             ((RegularUser) user).setPhoneNumber("+39" + phoneTextField.getText());
             ((RegularUser) user).setPhonePlan(PhonePlan.valueOf(phonePlanChoiceBox.getValue()));
+            UserAddress address = new UserAddress(addressTextField.getText(), cityTextField.getText(),
+                    postalCodeTextField.getText(), countryTextField.getText(), stateTextField.getText());
+            ((RegularUser) user).setAddress(address);
         }
         UserPersistence.saveUser(user);
         loadUser(user);
@@ -215,6 +244,17 @@ public class UserInfoController {
         RegularUser ru = (RegularUser) user;
         phoneTextField.setText(ru.getPhoneNumber().substring(3));
         setNodeVisible(phoneHBox, true);
+
+        addressTextField.setText(ru.getAddress().getAddress());
+        cityTextField.setText(ru.getAddress().getCity());
+        stateTextField.setText(ru.getAddress().getState());
+        postalCodeTextField.setText(ru.getAddress().getPostalCode());
+        countryTextField.setText(ru.getAddress().getCountry());
+        setNodeVisible(addressHBox, true);
+        setNodeVisible(cityHBox, true);
+        setNodeVisible(stateHBox, true);
+        setNodeVisible(postalCodeHBox, true);
+        setNodeVisible(countryHBox, true);
 
         phonePlanChoiceBox.setValue(ru.getPhonePlan().toString());
         setNodeVisible(planHBox, true);

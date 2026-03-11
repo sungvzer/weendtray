@@ -16,9 +16,11 @@ public class UserBuilder {
     private String phoneNumber;
     private PhonePlan phonePlan;
     private Optional<Integer> id;
+    private Optional<UserAddress> address;
 
     public UserBuilder() {
         id = Optional.empty();
+        address = Optional.empty();
     }
 
     public UserBuilder withId(int id) {
@@ -66,9 +68,15 @@ public class UserBuilder {
         return this;
     }
 
+    public UserBuilder withAddress(UserAddress address) {
+        this.address = Optional.of(address);
+        return this;
+    }
+
     public User build() {
         if (role == UserRole.USER) {
-            var regularUser = new RegularUser(username, hashedPassword, name, surname, phonePlan, phoneNumber, true);
+            var regularUser = new RegularUser(username, hashedPassword, name, surname, phonePlan, phoneNumber, true,
+                    address.orElse(null));
             regularUser.setId(id.orElse(-1));
             return regularUser;
         } else {
