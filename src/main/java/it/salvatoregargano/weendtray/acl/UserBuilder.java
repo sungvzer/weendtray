@@ -12,6 +12,10 @@ public class UserBuilder {
     private PhonePlan phonePlan;
     private Optional<Integer> id;
 
+    public UserBuilder() {
+        id = Optional.empty();
+    }
+
     public UserBuilder withId(int id) {
         this.id = Optional.of(id);
         return this;

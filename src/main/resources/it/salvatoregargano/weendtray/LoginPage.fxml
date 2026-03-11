@@ -22,8 +22,8 @@
         <PasswordField fx:id="passwordField" promptText="Password" />
         <CheckBox mnemonicParsing="false" text="Ricordami" fx:id="keepSession" />
         <HBox spacing="8">
-            <Button maxWidth="Infinity" onMouseClicked="#onLogin" text="Accedi" HBox.hgrow="ALWAYS" />
-            <Button maxWidth="Infinity" onMouseClicked="#onSignup" text="Registrati"
+            <Button maxWidth="Infinity" onAction="#onLogin" text="Accedi" HBox.hgrow="ALWAYS" />
+            <Button maxWidth="Infinity" onAction="#onSignup" text="Registrati"
                 HBox.hgrow="ALWAYS" />
         </HBox>
     </VBox>

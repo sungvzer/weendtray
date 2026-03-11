@@ -1,17 +1,22 @@
 package it.salvatoregargano.weendtray.ui;
 
+import java.io.IOException;
+import java.net.URL;
+
 import it.salvatoregargano.weendtray.acl.BadCredentialsError;
 import it.salvatoregargano.weendtray.acl.CredentialsService;
 import it.salvatoregargano.weendtray.acl.CredentialsServiceError;
 import it.salvatoregargano.weendtray.acl.UserDeactivatedError;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
-import java.net.URL;
+import javafx.stage.Stage;
 
 public class LoginPageController {
     @FXML
@@ -50,5 +55,15 @@ public class LoginPageController {
     }
 
     public void onSignup() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/it/salvatoregargano/weendtray/NewUser.fxml"));
+            Stage newUserStage = new Stage();
+            newUserStage.setTitle("Nuovo Utente");
+            newUserStage.setScene(new Scene(root));
+            newUserStage.setResizable(false);
+            newUserStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

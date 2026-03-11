@@ -15,7 +15,7 @@
     <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="200.0">
         <Text fx:id="helloField" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
-        <Button mnemonicParsing="false" onMouseClicked="#onLogout" text="Esci" />
+        <Button mnemonicParsing="false" onAction="#onLogout" text="Esci" />
     </ToolBar>
     <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <Tab fx:id="usersTab" closable="false" text="Utenti" />
