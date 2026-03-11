@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox spacing="8.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/25"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="it.salvatoregargano.weendtray.ui.UserInfoController">
+   <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+      <padding>
+         <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+      </padding>
+      <HBox alignment="CENTER_LEFT" spacing="8.0">
+         <Text text="Nome utente:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <TextField fx:id="usernameTextField" editable="false" />
+      </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="8.0">
+         <Text text="Nuova password:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <PasswordField fx:id="passwordField" editable="false" />
+      </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="8.0">
+         <Text text="Nome:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <TextField fx:id="nameTextField" editable="false" />
+      </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="8.0">
+         <Text text="Cognome:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <TextField fx:id="surnameTextField" editable="false" />
+      </HBox>
+      <HBox fx:id="phoneHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0" visible="false">
+         <Text text="Numero di telefono:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <Text text="+39" />
+            <TextField fx:id="phoneTextField" editable="false" />
+         </HBox>
+      </HBox>
+      <HBox fx:id="planHBox" alignment="CENTER_LEFT" spacing="8.0" visible="false" managed="false">
+         <Text text="Piano tariffario:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <ChoiceBox fx:id="phonePlanChoiceBox" disable="true" />
+      </HBox>
+   </VBox>
+   <ToolBar prefHeight="40.0" prefWidth="200.0">
+      <items>
+         <Button fx:id="disableUserButton" mnemonicParsing="false" onAction="#handleDisableUser"
+            text="Disdici utenza">
+            <graphic>
+               <ImageView fx:id="disableUserIcon" fitHeight="16.0" fitWidth="16.0"
+                  pickOnBounds="true" preserveRatio="true">
+               </ImageView>
+            </graphic>
+         </Button>
+         <Button fx:id="editUserButton" mnemonicParsing="false" onAction="#handleEditUser"
+            text="Modifica utente">
+            <graphic>
+               <ImageView fx:id="editUserIcon" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                  preserveRatio="true">
+               </ImageView>
+            </graphic>
+         </Button>
+         <Button fx:id="saveUserButton" mnemonicParsing="false" onAction="#handleSaveUser"
+            text="Salva modifiche">
+            <graphic>
+               <ImageView fx:id="saveUserIcon" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                  preserveRatio="true">
+               </ImageView>
+            </graphic>
+         </Button>
+         <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel"
+            text="Annulla modifiche">
+            <graphic>
+               <ImageView fx:id="cancelIcon" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                  preserveRatio="true">
+               </ImageView>
+            </graphic>
+         </Button>
+         <Button fx:id="enableUserButton" mnemonicParsing="false" onAction="#handleEnableUser"
+            text="Riattiva utenza">
+            <graphic>
+               <ImageView fx:id="enableUserIcon" fitHeight="16.0" fitWidth="16.0"
+                  pickOnBounds="true" preserveRatio="true">
+               </ImageView>
+            </graphic>
+         </Button>
+      </items>
+   </ToolBar>
+</VBox>

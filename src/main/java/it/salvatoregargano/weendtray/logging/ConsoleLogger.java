@@ -1,6 +1,6 @@
 package it.salvatoregargano.weendtray.logging;
 
-import it.salvatoregargano.weendtray.Entrypoint;
+import it.salvatoregargano.weendtray.Main;
 
 /**
  * PhoneEventLogger that logs messages to the console.
@@ -24,7 +24,7 @@ public class ConsoleLogger extends Logger {
             return;
         }
 
-        String builder = '[' + Entrypoint.executionId + "] " + '[' + level + "]: " + message;
+        String builder = '[' + Main.executionId + "] " + '[' + level + "]: " + message;
         System.out.println(builder);
     }
 }

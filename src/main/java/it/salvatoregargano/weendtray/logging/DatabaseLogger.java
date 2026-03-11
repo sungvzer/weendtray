@@ -1,6 +1,6 @@
 package it.salvatoregargano.weendtray.logging;
 
-import it.salvatoregargano.weendtray.Entrypoint;
+import it.salvatoregargano.weendtray.Main;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ public class DatabaseLogger extends Logger {
             try (var statement = connection.prepareStatement("INSERT INTO logs (message, level, execution_id) VALUES (?, ?, ?)")) {
                 statement.setString(1, message);
                 statement.setString(2, level.toString());
-                statement.setString(3, Entrypoint.executionId);
+                statement.setString(3, Main.executionId);
                 statement.execute();
             }
 

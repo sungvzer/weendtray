@@ -3,7 +3,9 @@ open module WeendTray {
     requires java.sql;
     requires javafx.controls;
     requires javafx.fxml;
-    requires info.picocli;
+    requires transitive javafx.graphics;
+    requires javafx.base;
+    requires java.desktop;
 
-    exports it.salvatoregargano.weendtray to javafx.graphics, info.picocli;
+    exports it.salvatoregargano.weendtray;
 }
