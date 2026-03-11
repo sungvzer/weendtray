@@ -2,6 +2,15 @@ package it.salvatoregargano.weendtray.acl;
 
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
+/**
+ * The RegularUser class represents a standard user of the application,
+ * extending the base User class. It includes additional attributes specific to
+ * regular users, such as their phone plan and phone number. This class provides
+ * constructors for creating regular user instances and getter/setter methods
+ * for accessing and modifying the phone plan and phone number. Regular users
+ * are typically the primary users of the application, and this class
+ * encapsulates the relevant information and behaviors associated with them.
+ */
 public class RegularUser extends User {
     private PhonePlan phonePlan;
     private String phoneNumber;

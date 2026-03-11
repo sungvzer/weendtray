@@ -8,7 +8,32 @@ import java.util.Optional;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
+/**
+ * <p>
+ * The SessionPersistence class is responsible for managing user sessions within
+ * the application. It provides methods to create, retrieve, and delete user
+ * sessions, as well as to handle session tokens.
+ * </p>
+ * 
+ * <p>
+ * This class interacts with the
+ * database to store and retrieve session information, ensuring that user
+ * sessions are properly maintained and secured. It also handles the creation of
+ * session files on the user's system to facilitate session resumption.
+ * </p>
+ */
 public class SessionPersistence {
+    /**
+     * Retrieves a user associated with a given session token. This method checks
+     * the
+     * database for a valid session token and returns the corresponding user if the
+     * token is valid and has not expired. If the token is invalid or has expired,
+     * it returns an empty Optional.
+     * 
+     * @param token the session token to look up in the database
+     * @return an Optional containing the User associated with the session token, or
+     *         an empty Optional if the token is invalid or has expired
+     */
     public static Optional<User> getUserBySessionToken(String token) {
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
                 "SELECT user_id FROM user_session WHERE session_token = ? AND expires_at > ?")) {
@@ -28,6 +53,11 @@ public class SessionPersistence {
         return Optional.empty();
     }
 
+    /**
+     * Creates a new session for the specified user.
+     * 
+     * @param user the user for whom to create a session
+     */
     public static void createSessionForUser(User user) {
         final CombinedLogger logger = CombinedLogger.getInstance();
         logger.info("Creating session for user " + user.getUsername());
@@ -59,6 +89,13 @@ public class SessionPersistence {
         }
     }
 
+    /**
+     * Deletes all sessions associated with the specified user. This method removes
+     * all session records from the database for the given user and also deletes the
+     * session token file from the user's system if it exists.
+     * 
+     * @param user the user for whom to delete sessions
+     */
     public static void deleteSessionsForUser(User user) {
         final CombinedLogger logger = CombinedLogger.getInstance();
         logger.info("Deleting sessions for user " + user.getUsername());

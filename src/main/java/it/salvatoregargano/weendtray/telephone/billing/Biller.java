@@ -8,7 +8,24 @@ import it.salvatoregargano.weendtray.telephone.DataUsageEvent;
 import it.salvatoregargano.weendtray.telephone.MessageEvent;
 import it.salvatoregargano.weendtray.telephone.PhoneEvent;
 
+/**
+ * The Biller class is responsible for handling billing operations related to
+ * phone events. It implements the Observer interface, allowing it to receive
+ * updates when phone events occur. When a phone event is received, the Biller
+ * calculates the cost associated with the event based on the user's phone plan
+ * and billing strategy. It then charges the user's wallet accordingly. The
+ * Biller interacts with the UserPersistence to retrieve user information and
+ * with the WalletService to manage wallet transactions. Additionally, it uses
+ * the CombinedLogger to log any errors or important information during the
+ * billing process.
+ */
 public class Biller implements Observer<PhoneEvent> {
+
+    /**
+     * Handles the update of a phone event by calculating the billable cost based on
+     * the user's phone plan and billing strategy, and then charging the user's
+     * wallet accordingly.
+     */
     @Override
     public void update(PhoneEvent event) {
         final var logger = CombinedLogger.getInstance();

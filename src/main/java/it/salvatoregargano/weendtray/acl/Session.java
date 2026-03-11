@@ -2,6 +2,12 @@ package it.salvatoregargano.weendtray.acl;
 
 import java.util.Date;
 
+/**
+ * The Session class represents a user session within the application. It holds
+ * information about the session, including the session token, the associated
+ * user,
+ * and the expiration date.
+ */
 public class Session {
     public String token;
     public User user;

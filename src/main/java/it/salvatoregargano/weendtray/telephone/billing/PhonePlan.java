@@ -1,5 +1,12 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
+/**
+ * The PhonePlan class represents a phone plan that users can subscribe to. Each
+ * phone plan has a name and an associated billing strategy that defines how
+ * costs
+ * are calculated for different types of phone events, such as calls, messages,
+ * and data usage.
+ */
 public class PhonePlan {
     public static final PhonePlan PREMIUM = new PhonePlan("PREMIUM", new PremiumBillingStrategy());
     public static final PhonePlan REGULAR = new PhonePlan("REGULAR", new RegularBillingStrategy());

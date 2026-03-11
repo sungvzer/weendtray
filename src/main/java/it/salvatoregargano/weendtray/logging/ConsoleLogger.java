@@ -3,7 +3,7 @@ package it.salvatoregargano.weendtray.logging;
 import it.salvatoregargano.weendtray.Main;
 
 /**
- * PhoneEventLogger that logs messages to the console.
+ * {@link Logger} that prints messages to the console.
  */
 public class ConsoleLogger extends Logger {
     private static ConsoleLogger instance;

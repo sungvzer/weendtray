@@ -1,5 +1,14 @@
 package it.salvatoregargano.weendtray.utils;
 
+/**
+ * The StringChecker class provides a fluent interface for defining validation
+ * rules for strings. It allows you to specify requirements such as minimum and
+ * maximum length, the number of uppercase letters, and the number of digits.
+ * The check method validates a given string against the defined rules and
+ * returns an error message if any rule is violated, or null if the string is
+ * valid. This class can be used for validating user input, such as passwords or
+ * phone numbers, by creating specific checkers with predefined rules.
+ */
 public class StringChecker {
     private int upperCount;
     private String upperMessage;
