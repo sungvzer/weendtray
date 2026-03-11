@@ -1,6 +1,6 @@
 package it.salvatoregargano.weendtray.telephone;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 // Data Usage Event
 public class DataUsageEvent extends PhoneEvent {

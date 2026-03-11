@@ -120,7 +120,7 @@ public class UsersTabController {
                         return null;
                     } else {
                         RegularUser regularUser = (RegularUser) cellData.getValue();
-                        String planName = regularUser.getPhonePlan().name;
+                        String planName = regularUser.getPhonePlan().toString();
                         return new ObservableValue<String>() {
                             @Override
                             public void addListener(ChangeListener<? super String> listener) {

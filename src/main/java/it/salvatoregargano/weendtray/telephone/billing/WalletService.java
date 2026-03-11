@@ -5,6 +5,13 @@ import java.sql.SQLException;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
+/**
+ * The WalletService class is responsible for managing user wallets, which are
+ * used for billing purposes. It provides methods to retrieve a user's wallet
+ * and to add or subtract amounts from the wallet balance. The service
+ * interacts with the
+ * database to persist wallet information.
+ */
 public class WalletService {
     private static WalletService instance;
 

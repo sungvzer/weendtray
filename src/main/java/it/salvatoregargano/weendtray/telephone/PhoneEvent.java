@@ -1,8 +1,8 @@
 package it.salvatoregargano.weendtray.telephone;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
-
 import java.util.UUID;
+
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 public abstract class PhoneEvent {
     private final String sourceNumber;
@@ -35,4 +35,3 @@ public abstract class PhoneEvent {
         return uuid;
     }
 }
-

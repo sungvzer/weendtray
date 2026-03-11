@@ -6,19 +6,29 @@ import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 /**
  * Class to persist users to the database.
  * <p>
  * This class is responsible for saving users to the database. It uses the
  * {@link DatabaseConnection} class to connect to the database.
+ * </p>
  *
  * <p>
  * The table `user` is created if it does not exist.
+ * </p>
  *
  * @see User
  */
 public class UserPersistence {
+    /**
+     * Gets a user by its id.
+     * 
+     * @param id the id of the user to get
+     * @return the user with the specified id, or null if no user with the specified
+     *         id exists
+     */
     public static User getUserById(int id) {
         var logger = CombinedLogger.getInstance();
         if (id < 0) {
@@ -198,6 +208,12 @@ public class UserPersistence {
         return false;
     }
 
+    /**
+     * Promotes a user to admin. This method updates the user's role to ADMIN in the
+     * database. If the user is already an admin, this method does nothing.
+     * 
+     * @param user the user to promote to admin
+     */
     public static void promoteUser(User user) {
         var logger = CombinedLogger.getInstance();
 
@@ -218,6 +234,11 @@ public class UserPersistence {
         logger.info("Promoted user: " + user.getId() + " (" + user.getUsername() + ")");
     }
 
+    /**
+     * Lists all users in the database.
+     * 
+     * @return an ArrayList of all users in the database.
+     */
     public static ArrayList<User> listUsers() {
         ArrayList<User> users = new ArrayList<>();
 
@@ -259,6 +280,16 @@ public class UserPersistence {
 
     }
 
+    /**
+     * Checks if a phone number is already in use by another user. This method
+     * queries the database to determine if any user has the specified phone number.
+     * It returns true if the phone number is already associated with an existing
+     * user, and false otherwise.
+     * 
+     * @param phoneNumber the phone number to check for uniqueness
+     * @return true if the phone number is already in use by another user, false
+     *         otherwise
+     */
     public static boolean isPhoneNumberInUse(String phoneNumber) {
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.getInstance().getConnection()
@@ -274,6 +305,13 @@ public class UserPersistence {
         return false;
     }
 
+    /**
+     * Gets a user by its username. This method queries the database for a user with
+     * the specified username and returns the corresponding User object if found. If
+     * no user with the given username exists, it returns null.
+     * 
+     * @param username the username of the user to retrieve
+     */
     public static User getUserByUsername(String username) {
         var logger = CombinedLogger.getInstance();
         try (var statement = DatabaseConnection.getInstance().getConnection()
@@ -309,6 +347,14 @@ public class UserPersistence {
         return null;
     }
 
+    /**
+     * Toggles the active status of a user. This method updates the user's active
+     * status in the database, switching it from active to inactive or vice versa.
+     * If the user is currently active, it will be deactivated, and if it is
+     * currently inactive, it will be activated. This method is typically used to
+     * enable or disable user accounts without permanently deleting them from the
+     * database.
+     */
     public static void toggleUser(User user) {
         var logger = CombinedLogger.getInstance();
 

@@ -2,6 +2,11 @@ package it.salvatoregargano.weendtray.acl;
 
 import java.util.Optional;
 
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+
+/**
+ * Helper class for building {@link User} objects.
+ */
 public class UserBuilder {
     private String username;
     private String hashedPassword;

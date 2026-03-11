@@ -1,6 +1,6 @@
 package it.salvatoregargano.weendtray.telephone;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 // Message Event (SMS)
 public class MessageEvent extends PhoneEvent {
@@ -17,6 +17,7 @@ public class MessageEvent extends PhoneEvent {
 
     @Override
     public String getDescription() {
-        return "[" + getUUID() + "][SMS] from " + getSourceNumber() + " to " + getTargetNumber() + " (" + getContent().length() + " characters)";
+        return "[" + getUUID() + "][SMS] from " + getSourceNumber() + " to " + getTargetNumber() + " ("
+                + getContent().length() + " characters)";
     }
 }

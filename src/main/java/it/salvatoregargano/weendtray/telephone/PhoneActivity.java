@@ -1,9 +1,9 @@
 package it.salvatoregargano.weendtray.telephone;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
-import it.salvatoregargano.weendtray.patterns.Observable;
-
 import java.time.Duration;
+
+import it.salvatoregargano.weendtray.patterns.Observable;
+import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 
 // Observable Class
 public class PhoneActivity extends Observable<PhoneEvent> {

@@ -1,6 +1,5 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
-import it.salvatoregargano.weendtray.acl.PhonePlan;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.patterns.Observer;
@@ -9,42 +8,24 @@ import it.salvatoregargano.weendtray.telephone.DataUsageEvent;
 import it.salvatoregargano.weendtray.telephone.MessageEvent;
 import it.salvatoregargano.weendtray.telephone.PhoneEvent;
 
+/**
+ * The Biller class is responsible for handling billing operations related to
+ * phone events. It implements the Observer interface, allowing it to receive
+ * updates when phone events occur. When a phone event is received, the Biller
+ * calculates the cost associated with the event based on the user's phone plan
+ * and billing strategy. It then charges the user's wallet accordingly. The
+ * Biller interacts with the UserPersistence to retrieve user information and
+ * with the WalletService to manage wallet transactions. Additionally, it uses
+ * the CombinedLogger to log any errors or important information during the
+ * billing process.
+ */
 public class Biller implements Observer<PhoneEvent> {
-    private double messageCost(MessageEvent event) {
-        if (event.getPlan() == PhonePlan.BUSINESS) {
-            return 0;
-        } else if (event.getPlan() == PhonePlan.PREMIUM) {
-            return 0.0075 * event.getContent().length();
-        } else if (event.getPlan() == PhonePlan.REGULAR) {
-            return 0.01 * event.getContent().length();
-        }
 
-        return 0;
-    }
-
-    private double callCost(CallEvent event) {
-        if (event.getPlan() == PhonePlan.BUSINESS) {
-            return 0;
-        } else if (event.getPlan() == PhonePlan.PREMIUM) {
-            return 0.05 * event.getDuration().toMinutes();
-        } else if (event.getPlan() == PhonePlan.REGULAR) {
-            return 0.1 * event.getDuration().toMinutes();
-        }
-
-        return 0;
-    }
-
-    private double dataCost(DataUsageEvent event) {
-        if (event.getPlan() == PhonePlan.BUSINESS) {
-            return 0;
-        } else if (event.getPlan() == PhonePlan.PREMIUM) {
-            return 0.00025 * event.getDataSizeKB();
-        } else if (event.getPlan() == PhonePlan.REGULAR) {
-            return 0.005 * event.getDataSizeKB();
-        }
-        return 0;
-    }
-
+    /**
+     * Handles the update of a phone event by calculating the billable cost based on
+     * the user's phone plan and billing strategy, and then charging the user's
+     * wallet accordingly.
+     */
     @Override
     public void update(PhoneEvent event) {
         final var logger = CombinedLogger.getInstance();
@@ -56,12 +37,15 @@ public class Biller implements Observer<PhoneEvent> {
             return;
         }
 
+        final var phonePlan = user.getPhonePlan();
+        final var billingStrategy = phonePlan.getBillingStrategy();
+
         if (event instanceof MessageEvent messageEvent) {
-            billableCost = messageCost(messageEvent);
+            billableCost = billingStrategy.calculateMessageCost(messageEvent);
         } else if (event instanceof CallEvent callEvent) {
-            billableCost = callCost(callEvent);
+            billableCost = billingStrategy.calculateCallCost(callEvent);
         } else if (event instanceof DataUsageEvent dataUsage) {
-            billableCost = dataCost(dataUsage);
+            billableCost = billingStrategy.calculateDataCost(dataUsage);
         }
 
         // Charge the wallet

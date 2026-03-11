@@ -4,6 +4,14 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+/**
+ * The User class represents a user of the application, encapsulating their
+ * credentials, personal information, and role. It provides methods for password
+ * hashing and verification, as well as getters and setters for user attributes.
+ * The User class serves as a base class for different types of users, such as
+ * regular users and administrators, and is used throughout the application to
+ * manage user authentication and authorization.
+ */
 public class User {
     private String username;
     private String password;
