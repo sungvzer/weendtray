@@ -1,6 +1,7 @@
 package it.salvatoregargano.weendtray.ui;
 
 import it.salvatoregargano.weendtray.acl.*;
+import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 import it.salvatoregargano.weendtray.telephone.billing.Wallet;
 import it.salvatoregargano.weendtray.telephone.billing.WalletService;
 
@@ -59,5 +60,13 @@ public class UserDashboardController {
     private void initialize() throws SQLException {
         user = (RegularUser) CredentialsService.getInstance().getLoggedUser();
         userWallet = WalletService.getInstance().getWallet(user.getId());
+        if (user.getKind().equals(UserAccountKind.PAY_AS_YOU_GO)){
+            usageBox.setManaged(false);
+            usageBox.setVisible(false);
+            renewalLabel.setManaged(false);
+            renewalLabel.setVisible(false);
+
+        }
+
     }
 }
