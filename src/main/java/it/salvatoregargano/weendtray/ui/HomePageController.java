@@ -16,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 
 public class HomePageController {
@@ -25,12 +26,20 @@ public class HomePageController {
     @FXML
     Tab usersTab;
 
+    @FXML
+    Tab userDashboardTab;
+
+    @FXML
+    TabPane tabPane;
+
     public void initialize() {
         final User user = CredentialsService.getInstance().getLoggedUser();
 
         if (user.getRole() == UserRole.ADMIN) {
+            tabPane.getTabs().remove(userDashboardTab);
             helloField.setText("Ciao, %s! Sei un admin.".formatted(user.getUsername()));
         } else {
+            tabPane.getTabs().remove(usersTab);
             RegularUser regularUser = (RegularUser) user;
             Optional<Wallet> walletOptional = Optional.empty();
             try {
@@ -73,6 +82,30 @@ public class HomePageController {
                 CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
             }
         }
+        userDashboardTab.selectedProperty().addListener((_, _, isNowSelected) -> {
+            if (isNowSelected && userDashboardTab.getContent() == null) {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/it/salvatoregargano/weendtray/UserDashboard.fxml"));
+                try {
+                    Node content = loader.load();
+                    userDashboardTab.setContent(content);
+                } catch (IOException e) {
+                    CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
+                }
+            }
+        });
+
+        if (userDashboardTab.isSelected()) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/salvatoregargano/weendtray/UserDashboard.fxml"));
+            try {
+                Node content = loader.load();
+                userDashboardTab.setContent(content);
+            } catch (IOException e) {
+                CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
+            }
+        }
+
+
     }
 
     public void onLogout() {

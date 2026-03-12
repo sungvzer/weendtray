@@ -8,25 +8,6 @@
 <VBox prefHeight="500.0" prefWidth="500.0" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.salvatoregargano.weendtray.ui.UserDashboardController">
     <children>
 
-        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 1 0;">
-            <children>
-                <VBox HBox.hgrow="ALWAYS">
-                    <children>
-                        <Label fx:id="userNameLabel" text="Mario Rossi">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Label>
-                        <Label fx:id="phoneNumberLabel" text="333 1234567" />
-                    </children>
-                </VBox>
-                <Button mnemonicParsing="false" text="Logout" />
-            </children>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </HBox>
-
         <VBox spacing="5.0" style="-fx-border-color: #cccccc;">
             <children>
                 <Label text="Piano Tariffario Attivo:">
@@ -34,7 +15,7 @@
                         <Font size="11.0" />
                     </font>
                 </Label>
-                <Label fx:id="planNameLabel" text="Piano ">
+                <Label fx:id="userPlanType" text="Piano ">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
