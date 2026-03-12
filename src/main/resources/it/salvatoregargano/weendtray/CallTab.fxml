@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="457.0" prefWidth="338.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="457.0" prefWidth="338.0" xmlns="http://javafx.com/javafx/25" 
+xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.salvatoregargano.weendtray.ui.callTabController">
    <children>
       <VBox prefHeight="156.0" prefWidth="338.0">
          <children>
