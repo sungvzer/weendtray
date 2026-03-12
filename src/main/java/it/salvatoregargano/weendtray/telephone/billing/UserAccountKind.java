@@ -46,6 +46,17 @@ public class UserAccountKind {
         return new UserAccountKind[] { FIXED_COST, PAY_AS_YOU_GO };
     }
 
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        UserAccountKind other = (UserAccountKind) obj;
+        return id.equals(other.id);
+    }
+
     public static final UserAccountKind FIXED_COST = new UserAccountKind("FIXED_COST", "Conto fisso");
     public static final UserAccountKind PAY_AS_YOU_GO = new UserAccountKind("PAY_AS_YOU_GO", "Conto ricaricabile");
 }
