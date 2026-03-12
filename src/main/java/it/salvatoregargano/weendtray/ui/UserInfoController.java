@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
-import it.salvatoregargano.weendtray.acl.UserAccountKind;
 import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 import it.salvatoregargano.weendtray.ui.icons.IconFactory;
 import it.salvatoregargano.weendtray.utils.StringChecker;
 import javafx.beans.property.SimpleBooleanProperty;

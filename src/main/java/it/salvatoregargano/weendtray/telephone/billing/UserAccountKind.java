@@ -1,4 +1,4 @@
-package it.salvatoregargano.weendtray.acl;
+package it.salvatoregargano.weendtray.telephone.billing;
 
 public class UserAccountKind {
     private String id;

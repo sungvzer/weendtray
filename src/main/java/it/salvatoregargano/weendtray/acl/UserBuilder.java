@@ -3,6 +3,7 @@ package it.salvatoregargano.weendtray.acl;
 import java.util.Optional;
 
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 
 /**
  * Helper class for building {@link User} objects.
