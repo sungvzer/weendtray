@@ -14,17 +14,21 @@ import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 public class RegularUser extends User {
     private PhonePlan phonePlan;
     private String phoneNumber;
+    private UserAddress address;
+    private UserAccountKind kind;
 
     public RegularUser(String username, String password, String name, String surname, PhonePlan plan,
-            String phoneNumber, boolean active) {
-        this(-1, username, password, name, surname, plan, phoneNumber, active);
+            String phoneNumber, boolean active, UserAddress address, UserAccountKind kind) {
+        this(-1, username, password, name, surname, plan, phoneNumber, active, address, kind);
     }
 
     public RegularUser(int id, String username, String password, String name, String surname, PhonePlan plan,
-            String phoneNumber, boolean active) {
+            String phoneNumber, boolean active, UserAddress address, UserAccountKind kind) {
         super(id, username, password, name, surname, UserRole.USER, active);
         phonePlan = plan;
         this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.kind = kind;
     }
 
     public PhonePlan getPhonePlan() {
@@ -42,4 +46,21 @@ public class RegularUser extends User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public UserAddress getAddress() {
+        return address;
+    }
+
+    public void setAddress(UserAddress address) {
+        this.address = address;
+    }
+
+    public UserAccountKind getKind() {
+        return kind;
+    }
+
+    public void setKind(UserAccountKind kind) {
+        this.kind = kind;
+    }
+
 }

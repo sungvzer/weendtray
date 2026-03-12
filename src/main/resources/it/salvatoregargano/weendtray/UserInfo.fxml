@@ -47,10 +47,51 @@
             <TextField fx:id="phoneTextField" editable="false" />
          </HBox>
       </HBox>
+      <HBox fx:id="addressHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0"
+         visible="false">
+         <Text text="Indirizzo:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <TextField fx:id="addressTextField" editable="false" />
+         </HBox>
+      </HBox>
+      <HBox fx:id="cityHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0"
+         visible="false">
+         <Text text="Città:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <TextField fx:id="cityTextField" editable="false" />
+         </HBox>
+      </HBox>
+      <HBox fx:id="stateHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0"
+         visible="false">
+         <Text text="Provincia:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <TextField fx:id="stateTextField" editable="false" />
+         </HBox>
+      </HBox>
+      <HBox fx:id="postalCodeHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0"
+         visible="false">
+         <Text text="CAP:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <TextField fx:id="postalCodeTextField" editable="false" />
+         </HBox>
+      </HBox>
+      <HBox fx:id="countryHBox" alignment="CENTER_LEFT" managed="false" spacing="8.0"
+         visible="false">
+         <Text text="Nazione:" />
+         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+         <HBox spacing="4.0" alignment="CENTER_LEFT">
+            <TextField fx:id="countryTextField" editable="false" />
+         </HBox>
+      </HBox>
       <HBox fx:id="planHBox" alignment="CENTER_LEFT" spacing="8.0" visible="false" managed="false">
          <Text text="Piano tariffario:" />
          <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
          <ChoiceBox fx:id="phonePlanChoiceBox" disable="true" />
+         <ChoiceBox fx:id="accountKindChoiceBox" disable="true" />
       </HBox>
    </VBox>
    <ToolBar prefHeight="40.0" prefWidth="200.0">

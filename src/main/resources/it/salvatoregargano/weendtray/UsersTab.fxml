@@ -25,6 +25,7 @@
                 <TableColumn fx:id="phoneNumberColumn" text="Numero di telefono" />
                 <TableColumn fx:id="phonePlanColumn" text="Tipo di piano" />
                 <TableColumn fx:id="creditColumn" text="Credito residuo" />
+                <TableColumn fx:id="addressColumn" text="Indirizzo completo" />
                 <TableColumn fx:id="actionsColumn" text="Azioni" />
             </columns>
         </TableView>
