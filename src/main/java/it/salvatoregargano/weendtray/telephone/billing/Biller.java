@@ -29,32 +29,76 @@ public class Biller implements Observer<PhoneEvent> {
     @Override
     public void update(PhoneEvent event) {
         final var logger = CombinedLogger.getInstance();
-
         double billableCost = 0;
         final var user = UserPersistence.getUserByPhoneNumber(event.getSourceNumber());
         if (user == null) {
             logger.error("Could not bill non-existent user with phone number " + event.getSourceNumber());
             return;
         }
+        Wallet userWallet = null;
+
+        try {
+            userWallet = WalletService.getInstance().getWallet(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         final var phonePlan = user.getPhonePlan();
         final var billingStrategy = phonePlan.getBillingStrategy();
-
-        if (event instanceof MessageEvent messageEvent) {
-            billableCost = billingStrategy.calculateMessageCost(messageEvent);
-        } else if (event instanceof CallEvent callEvent) {
-            billableCost = billingStrategy.calculateCallCost(callEvent);
-        } else if (event instanceof DataUsageEvent dataUsage) {
-            billableCost = billingStrategy.calculateDataCost(dataUsage);
+        final var accountKind = user.getKind();
+        if (accountKind == null) {
+            logger.error("User " + user.getId() + " has no account kind, cannot bill");
+            return;
         }
 
-        // Charge the wallet
-        final var walletService = WalletService.getInstance();
+        if (event instanceof MessageEvent messageEvent) {
+            if (accountKind.equals(UserAccountKind.PAY_AS_YOU_GO)) {
+                billableCost = billingStrategy.calculateMessageCost(messageEvent);
+            }
+        } else if (event instanceof CallEvent callEvent) {
+            if (accountKind.equals(UserAccountKind.PAY_AS_YOU_GO)) {
+                billableCost = billingStrategy.calculateCallCost(callEvent);
+            }
+        } else if (event instanceof DataUsageEvent dataUsage) {
+
+            if (accountKind.equals(UserAccountKind.PAY_AS_YOU_GO)) {
+                billableCost = billingStrategy.calculateDataCost(dataUsage);
+            }
+        }
+
         try {
-            final var wallet = walletService.getWallet(user.getId());
-            walletService.addAmountToWallet(wallet, -billableCost);
+            WalletService.getInstance().addAmountToWallet(userWallet, -billableCost);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (billableCost > 0) {
+            logger.info("Billed user " + user.getId() + " for event " + event.getDescription() + " with cost "
+                    + billableCost);
+        }
+
+        if (accountKind.equals(UserAccountKind.PAY_AS_YOU_GO)) {
+            if (event instanceof MessageEvent messageEvent) {
+                try {
+                    WalletService.getInstance().addMessages(userWallet,
+                            messageEvent.getContent().length() > 160 ? -2 : -1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (event instanceof CallEvent callEvent) {
+                try {
+                    WalletService.getInstance().addMinutes(userWallet,
+                            -((int) callEvent.getDuration().toSeconds() / 60));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (event instanceof DataUsageEvent dataUsage) {
+                try {
+                    WalletService.getInstance().addData(userWallet, -(dataUsage.getDataSizeKB() / 1024.0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package it.salvatoregargano.weendtray.acl;
 
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 
 /**
  * The RegularUser class represents a standard user of the application,

@@ -1,5 +1,6 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
@@ -31,10 +32,7 @@ public class WalletService {
             preparedStatement.setInt(1, userId);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new Wallet(
-                        resultSet.getInt("id"),
-                        resultSet.getDouble("balance"),
-                        resultSet.getInt("user_id"));
+                return fromResultSet(resultSet);
             } else {
                 // Create a new wallet for the user
                 var createStatement = DatabaseConnection.getInstance().getConnection().prepareStatement(
@@ -43,15 +41,63 @@ public class WalletService {
                 createStatement.executeUpdate();
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
-                    return new Wallet(
-                            resultSet.getInt("id"),
-                            resultSet.getDouble("balance"),
-                            resultSet.getInt("user_id"));
+                    return fromResultSet(resultSet);
                 }
             }
         }
 
         return null;
+    }
+
+    public void addMessages(Wallet wallet, int messages) throws SQLException {
+        final var logger = CombinedLogger.getInstance();
+        if (wallet == null) {
+            logger.error("Tried to add messages to a null wallet");
+            return;
+        }
+        var statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
+        if (!resultSet.next()) {
+            logger.error("Tried to add messages to a wallet that does not exist");
+        }
+
+        var newMessagesCount = wallet.getMessagesCount() + messages;
+        statement.executeUpdate(
+                "UPDATE wallet SET messages_count = " + newMessagesCount + " WHERE id = " + wallet.getId());
+    }
+
+    public void addMinutes(Wallet wallet, int minutes) throws SQLException {
+        final var logger = CombinedLogger.getInstance();
+        if (wallet == null) {
+            logger.error("Tried to add minutes to a null wallet");
+            return;
+        }
+        var statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
+        if (!resultSet.next()) {
+            logger.error("Tried to add minutes to a wallet that does not exist");
+        }
+
+        var newMinutesCount = wallet.getMinutesCount() + minutes;
+        statement.executeUpdate(
+                "UPDATE wallet SET minutes_count = " + newMinutesCount + " WHERE id = " + wallet.getId());
+    }
+
+    public void addData(Wallet wallet, double dataMB) throws SQLException {
+        final var logger = CombinedLogger.getInstance();
+        if (wallet == null) {
+            logger.error("Tried to add data to a null wallet");
+            return;
+        }
+        var statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
+        if (!resultSet.next()) {
+            logger.error("Tried to add data to a wallet that does not exist");
+        }
+
+        var newDataCount = wallet.getDataCount() + dataMB;
+        statement.executeUpdate(
+                "UPDATE wallet SET data_count = " + newDataCount + " WHERE id = " + wallet.getId());
     }
 
     public void addAmountToWallet(Wallet wallet, double amount) throws SQLException {
@@ -68,5 +114,16 @@ public class WalletService {
 
         var newBalance = wallet.getBalance() + amount;
         statement.executeUpdate("UPDATE wallet SET balance = " + newBalance + " WHERE id = " + wallet.getId());
+    }
+
+    private Wallet fromResultSet(ResultSet resultSet) throws SQLException {
+        return new WalletBuilder()
+                .withId(resultSet.getInt("id"))
+                .withBalance(resultSet.getDouble("balance"))
+                .withUserId(resultSet.getInt("user_id"))
+                .withDataCount(resultSet.getDouble("data_count"))
+                .withMessagesCount(resultSet.getInt("messages_count"))
+                .withMinutesCount(resultSet.getInt("minutes_count"))
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-package it.salvatoregargano.weendtray.acl;
+package it.salvatoregargano.weendtray.telephone.billing;
 
 public class UserAccountKind {
     private String id;
@@ -44,6 +44,17 @@ public class UserAccountKind {
 
     public static UserAccountKind[] values() {
         return new UserAccountKind[] { FIXED_COST, PAY_AS_YOU_GO };
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        UserAccountKind other = (UserAccountKind) obj;
+        return id.equals(other.id);
     }
 
     public static final UserAccountKind FIXED_COST = new UserAccountKind("FIXED_COST", "Conto fisso");

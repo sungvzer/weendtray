@@ -20,12 +20,14 @@ import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.MigrationRunner;
 import it.salvatoregargano.weendtray.ui.SceneFactory;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class Main extends Application {
     public static final String executionId = UUID.randomUUID().toString();
@@ -115,7 +117,18 @@ public class Main extends Application {
         stage.setWidth(600);
         stage.setTitle("WeendTray");
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));
-
+        Window.getWindows().addListener(new ListChangeListener<Window>() {
+            @Override
+            public void onChanged(Change<? extends Window> c) {
+                String logoPath = "images/logo.png";
+                Image logoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(logoPath)));
+                c.getList().forEach(window -> {
+                    if (window instanceof Stage) {
+                        ((Stage) window).getIcons().add(logoImage);
+                    }
+                });
+            }
+        });
         if (Taskbar.isTaskbarSupported()) {
             var taskbar = Taskbar.getTaskbar();
             final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();

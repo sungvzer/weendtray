@@ -3,12 +3,12 @@ package it.salvatoregargano.weendtray.ui;
 import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
-import it.salvatoregargano.weendtray.acl.UserAccountKind;
 import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserBuilder;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
+import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 import it.salvatoregargano.weendtray.utils.StringChecker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
