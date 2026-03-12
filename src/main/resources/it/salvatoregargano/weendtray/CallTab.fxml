@@ -15,32 +15,32 @@
       <VBox prefHeight="156.0" prefWidth="338.0">
          <children>
             <AnchorPane prefHeight="58.0" prefWidth="338.0" />
-            <TextField prefHeight="52.0" prefWidth="338.0" promptText="Chiama..." />
+            <TextField fx:id="numberTextField" prefHeight="52.0" prefWidth="338.0" promptText="Chiama..." />
             <Separator prefWidth="200.0" />
          </children>
       </VBox>
       <Separator prefWidth="200.0" />
-      <Label prefHeight="30.0" prefWidth="334.0" />
+      <Label fx:id="callStateLabel" prefHeight="30.0" prefWidth="334.0" />
       <HBox alignment="CENTER" prefHeight="132.0" prefWidth="338.0">
          <children>
-            <Button mnemonicParsing="false" prefHeight="49.0" prefWidth="68.0">
+            <Button fx:id="callButton" mnemonicParsing="false" prefHeight="49.0" prefWidth="68.0">
                <HBox.margin>
                   <Insets right="100.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="48.0" prefWidth="74.0" />
+            <Button fx:id="hangUpButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="74.0" />
          </children>
       </HBox>
       <VBox prefHeight="125.0" prefWidth="338.0">
          <children>
             <Separator prefWidth="200.0" />
-            <Label prefHeight="69.0" prefWidth="338.0" text="Tempo di chiamata:">
+            <Label fx:id="callTimeLabel" prefHeight="69.0" prefWidth="338.0" text="Tempo di chiamata:">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
             <Separator prefWidth="200.0" />
-            <Label layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="338.0" text="Costo:">
+            <Label fx:id="costLabel" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="338.0" text="Costo:">
                <padding>
                   <Insets left="10.0" />
                </padding>
