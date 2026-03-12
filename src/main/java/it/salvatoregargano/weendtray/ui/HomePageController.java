@@ -82,6 +82,7 @@ public class HomePageController {
                 CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
             }
         }
+
         userDashboardTab.selectedProperty().addListener((_, _, isNowSelected) -> {
             if (isNowSelected && userDashboardTab.getContent() == null) {
                 FXMLLoader loader = new FXMLLoader(
