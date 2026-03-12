@@ -3,6 +3,9 @@ package it.salvatoregargano.weendtray.telephone.billing;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
@@ -27,6 +30,8 @@ public class WalletService {
     }
 
     public Wallet getWallet(int userId) throws SQLException {
+        User user = UserPersistence.getUserById(userId);
+
         try (var preparedStatement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement("SELECT * FROM wallet WHERE user_id = ?")) {
             preparedStatement.setInt(1, userId);
@@ -36,8 +41,18 @@ public class WalletService {
             } else {
                 // Create a new wallet for the user
                 var createStatement = DatabaseConnection.getInstance().getConnection().prepareStatement(
-                        "INSERT INTO wallet (balance, user_id) VALUES (0, ?)");
+                        "INSERT INTO wallet (balance, user_id, messages_count, minutes_count, data_count) VALUES (0, ?, ?, ?, ?)");
                 createStatement.setInt(1, userId);
+                if (user.isAdminProperty().get()) {
+                    createStatement.setInt(2, 0);
+                    createStatement.setInt(3, 0);
+                    createStatement.setInt(4, 0);
+                } else {
+                    RegularUser regularUser = (RegularUser) user;
+                    createStatement.setInt(2, regularUser.getPhonePlan().getMessagesLimit());
+                    createStatement.setInt(3, regularUser.getPhonePlan().getMinutesLimit());
+                    createStatement.setDouble(4, regularUser.getPhonePlan().getDataLimitMB());
+                }
                 createStatement.executeUpdate();
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
