@@ -120,7 +120,9 @@ public class Main extends Application {
             var taskbar = Taskbar.getTaskbar();
             final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
             var dockIcon = defaultToolkit.getImage(getClass().getResource("images/logo.png"));
-            taskbar.setIconImage(dockIcon);
+            if (Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE)) {
+                taskbar.setIconImage(dockIcon);
+            }
         }
         stage.show();
     }
