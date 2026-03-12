@@ -81,19 +81,20 @@ public class Biller implements Observer<PhoneEvent> {
             if (event instanceof MessageEvent messageEvent) {
                 try {
                     WalletService.getInstance().addMessages(userWallet,
-                            messageEvent.getContent().length() > 160 ? 2 : 1);
+                            messageEvent.getContent().length() > 160 ? -2 : -1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (event instanceof CallEvent callEvent) {
                 try {
-                    WalletService.getInstance().addMinutes(userWallet, (int) callEvent.getDuration().toSeconds() / 60);
+                    WalletService.getInstance().addMinutes(userWallet,
+                            -((int) callEvent.getDuration().toSeconds() / 60));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (event instanceof DataUsageEvent dataUsage) {
                 try {
-                    WalletService.getInstance().addData(userWallet, dataUsage.getDataSizeKB() / 1024.0);
+                    WalletService.getInstance().addData(userWallet, -(dataUsage.getDataSizeKB() / 1024.0));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
