@@ -60,14 +60,18 @@ public class UserDashboardController {
     private void initialize() throws SQLException {
         user = (RegularUser) CredentialsService.getInstance().getLoggedUser();
         userWallet = WalletService.getInstance().getWallet(user.getId());
+        var userPlanKind = user.getKind();
 
-        if (user.getKind().equals(UserAccountKind.PAY_AS_YOU_GO)){
+        if (userPlanKind.equals(UserAccountKind.PAY_AS_YOU_GO)){
             usageBox.setManaged(false);
             usageBox.setVisible(false);
             renewalLabel.setManaged(false);
             renewalLabel.setVisible(false);
 
         }
+
+        userPlanType.setText(userPlanType.getText() + userPlanKind.getName());
+        userDataTraffic.setText();
 
     }
 }
