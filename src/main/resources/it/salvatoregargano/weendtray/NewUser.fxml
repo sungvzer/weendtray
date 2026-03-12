@@ -29,6 +29,7 @@
         <TextField fx:id="phoneNumberField" onKeyTyped="#handlePhoneNumberInput"
             promptText="Numero di telefono" HBox.hgrow="ALWAYS" />
         <ChoiceBox fx:id="phonePlanChoiceBox" prefWidth="150.0" HBox.hgrow="ALWAYS" />
+        <ChoiceBox fx:id="accountKindChoiceBox" prefWidth="150.0" HBox.hgrow="ALWAYS" />
     </HBox>
     <HBox alignment="CENTER_LEFT" spacing="8.0">
         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Indirizzo" />

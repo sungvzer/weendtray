@@ -3,6 +3,7 @@ package it.salvatoregargano.weendtray.ui;
 import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.UserAccountKind;
 import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserBuilder;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
@@ -42,6 +43,8 @@ public class NewUserController {
 
     @FXML
     private ChoiceBox<String> phonePlanChoiceBox;
+    @FXML
+    private ChoiceBox<String> accountKindChoiceBox;
 
     @FXML
     private void handlePhoneNumberInput(KeyEvent event) {
@@ -61,6 +64,14 @@ public class NewUserController {
 
         phonePlanChoiceBox.getItems().addAll(planNames);
         phonePlanChoiceBox.setValue(planNames.get(0));
+
+        UserAccountKind[] accountKinds = UserAccountKind.values();
+        ArrayList<String> accountKindNames = new ArrayList<>();
+        for (UserAccountKind accountKind : accountKinds) {
+            accountKindNames.add(accountKind.getName());
+        }
+        accountKindChoiceBox.getItems().addAll(accountKindNames);
+        accountKindChoiceBox.setValue(accountKindNames.get(0));
     }
 
     @FXML
@@ -104,6 +115,8 @@ public class NewUserController {
         UserAddress address = new UserAddress(addressField.getText(), cityField.getText(), postalCodeField.getText(),
                 countryField.getText(), stateField.getText());
 
+        UserAccountKind accountKind = UserAccountKind.valueOf(accountKindChoiceBox.getValue());
+
         RegularUser user = (RegularUser) new UserBuilder().withPlainTextPassword(passwordField.getText())
                 .withUsername(usernameField.getText())
                 .withRole(UserRole.USER)
@@ -111,6 +124,7 @@ public class NewUserController {
                 .withSurname(surnameField.getText())
                 .withPhoneNumber("+39" + phoneNumberField.getText())
                 .withPhonePlan(PhonePlan.valueOf(phonePlanChoiceBox.getValue()))
+                .withKind(accountKind)
                 .withAddress(address).build();
 
         UserPersistence.saveUser(user);

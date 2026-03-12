@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
+import it.salvatoregargano.weendtray.acl.UserAccountKind;
 import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
@@ -78,6 +79,8 @@ public class UserInfoController {
     @FXML
     private ChoiceBox<String> phonePlanChoiceBox;
     @FXML
+    private ChoiceBox<String> accountKindChoiceBox;
+    @FXML
     private TextField addressTextField;
     @FXML
     private TextField cityTextField;
@@ -97,6 +100,13 @@ public class UserInfoController {
         }
         phonePlanChoiceBox.getItems().setAll(planNames);
 
+        UserAccountKind[] accountKinds = UserAccountKind.values();
+        ArrayList<String> accountKindNames = new ArrayList<>();
+        for (UserAccountKind accountKind : accountKinds) {
+            accountKindNames.add(accountKind.getName());
+        }
+        accountKindChoiceBox.getItems().addAll(accountKindNames);
+
         isEditing = new SimpleBooleanProperty(false);
         isEditing.addListener((obs, oldVal, newVal) -> {
             setNodeVisible(saveUserButton, newVal);
@@ -113,6 +123,7 @@ public class UserInfoController {
             stateTextField.setEditable(newVal);
             postalCodeTextField.setEditable(newVal);
             countryTextField.setEditable(newVal);
+            accountKindChoiceBox.setDisable(!newVal);
         });
 
         disableUserIcon.setImage(IconFactory.getIconWithColor("phone_disabled", "#FF0000"));
@@ -173,6 +184,7 @@ public class UserInfoController {
             UserAddress address = new UserAddress(addressTextField.getText(), cityTextField.getText(),
                     postalCodeTextField.getText(), countryTextField.getText(), stateTextField.getText());
             ((RegularUser) user).setAddress(address);
+            ((RegularUser) user).setKind(UserAccountKind.valueOf(accountKindChoiceBox.getValue()));
         }
         UserPersistence.saveUser(user);
         loadUser(user);
@@ -258,6 +270,7 @@ public class UserInfoController {
 
         phonePlanChoiceBox.setValue(ru.getPhonePlan().toString());
         setNodeVisible(planHBox, true);
+        accountKindChoiceBox.setValue(ru.getKind().getName());
         if (user.isActive()) {
             setNodeVisible(disableUserButton, true);
             setNodeVisible(enableUserButton, false);

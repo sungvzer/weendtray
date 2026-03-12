@@ -41,34 +41,7 @@ public class UserPersistence {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                var role = UserRole.valueOf(rs.getString("role"));
-                if (role == UserRole.USER) {
-                    return new RegularUser(
-                            rs.getInt("id"),
-                            rs.getString("username"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getString("surname"),
-                            PhonePlan.valueOf(rs.getString("plan")) == null ? PhonePlan.REGULAR
-                                    : PhonePlan.valueOf(rs.getString("plan")),
-                            rs.getString("phonenumber"),
-                            rs.getInt("active") == 1,
-                            new UserAddress(
-                                    rs.getString("address"),
-                                    rs.getString("city"),
-                                    rs.getString("postal_code"),
-                                    rs.getString("country"),
-                                    rs.getString("state")));
-                }
-
-                return new User(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        role,
-                        rs.getInt("active") == 1);
+                return fromResultSet(rs);
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by id: " + e.getMessage());
@@ -90,7 +63,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
-                "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`, `plan`) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING `id`")) {
+                "INSERT INTO `user` (`username`, `password`, `name`, `surname`, `role`, `phonenumber`, `plan`, `kind`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING `id`")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -100,9 +73,11 @@ public class UserPersistence {
                 var regularUser = (RegularUser) user;
                 statement.setString(6, regularUser.getPhoneNumber());
                 statement.setString(7, regularUser.getPhonePlan().toString());
+                statement.setString(8, regularUser.getKind().toString());
             } else {
                 statement.setString(6, null);
                 statement.setString(7, null);
+                statement.setString(8, null);
             }
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
@@ -211,7 +186,7 @@ public class UserPersistence {
         }
 
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
-                "UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ? WHERE `user`.`id` = ?")) {
+                "UPDATE `user` SET `username` = ?, `password` = ?, `name` = ?, `surname` = ?, `role` = ?, `plan` = ?, `phonenumber` = ?, `active` = ?, `kind` = ? WHERE `user`.`id` = ?")) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -220,12 +195,14 @@ public class UserPersistence {
             if (user instanceof RegularUser regularUser) {
                 statement.setString(6, regularUser.getPhonePlan().toString());
                 statement.setString(7, regularUser.getPhoneNumber());
+                statement.setString(9, regularUser.getKind().toString());
             } else {
                 statement.setString(6, "REGULAR");
                 statement.setString(7, null);
+                statement.setString(9, null);
             }
             statement.setBoolean(8, user.isActive());
-            statement.setInt(9, user.getId());
+            statement.setInt(10, user.getId());
 
             statement.execute();
         } catch (SQLException e) {
@@ -244,21 +221,7 @@ public class UserPersistence {
             statement.setString(1, userPhoneNumber);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return new RegularUser(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        PhonePlan.valueOf(rs.getString("plan")),
-                        rs.getString("phonenumber"),
-                        rs.getInt("active") == 1,
-                        new UserAddress(
-                                rs.getString("address"),
-                                rs.getString("city"),
-                                rs.getString("postal_code"),
-                                rs.getString("country"),
-                                rs.getString("state")));
+                return (RegularUser) fromResultSet(rs);
             }
         } catch (SQLException e) {
             logger.error("Error while getting user by phone number: " + e.getMessage());
@@ -370,36 +333,7 @@ public class UserPersistence {
                         "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id")) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                var role = UserRole.valueOf(rs.getString("role"));
-                if (role == UserRole.USER) {
-                    User u = new RegularUser(
-                            rs.getInt("id"),
-                            rs.getString("username"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getString("surname"),
-                            PhonePlan.valueOf(rs.getString("plan")),
-                            rs.getString("phonenumber"),
-                            rs.getInt("active") == 1,
-                            new UserAddress(
-                                    rs.getString("address"),
-                                    rs.getString("city"),
-                                    rs.getString("postal_code"),
-                                    rs.getString("country"),
-                                    rs.getString("state")));
-                    users.add(u);
-                    continue;
-                }
-
-                User u = new User(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        role,
-                        rs.getInt("active") == 1);
-
+                User u = fromResultSet(rs);
                 users.add(u);
             }
         } catch (SQLException e) {
@@ -449,33 +383,7 @@ public class UserPersistence {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                var role = UserRole.valueOf(rs.getString("role"));
-                if (role == UserRole.USER) {
-                    return new RegularUser(
-                            rs.getInt("id"),
-                            rs.getString("username"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getString("surname"),
-                            PhonePlan.valueOf(rs.getString("plan")),
-                            rs.getString("phonenumber"),
-                            rs.getInt("active") == 1,
-                            new UserAddress(
-                                    rs.getString("address"),
-                                    rs.getString("city"),
-                                    rs.getString("postal_code"),
-                                    rs.getString("country"),
-                                    rs.getString("state")));
-                }
-
-                return new User(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        role,
-                        rs.getInt("active") == 1);
+                return fromResultSet(rs);
             }
         } catch (
 
@@ -534,5 +442,39 @@ public class UserPersistence {
 
         logger.info(
                 "User plan changed: " + user.getId() + " (" + user.getUsername() + "), now " + phonePlan.toString());
+    }
+
+    private static User fromResultSet(ResultSet rs) throws SQLException {
+        var role = UserRole.valueOf(rs.getString("role"));
+        if (role == UserRole.USER) {
+            return new UserBuilder().withId(rs.getInt("id"))
+                    .withUsername(rs.getString("username"))
+                    .withHashedPassword(rs.getString("password"))
+                    .withName(rs.getString("name"))
+                    .withSurname(rs.getString("surname"))
+                    .withRole(UserRole.USER)
+                    .withActive(rs.getInt("active") == 1)
+                    .withPhonePlan(PhonePlan.valueOf(rs.getString("plan")) == null ? PhonePlan.REGULAR
+                            : PhonePlan.valueOf(rs.getString("plan")))
+                    .withPhoneNumber(rs.getString("phonenumber"))
+                    .withAddress(new UserAddress(
+                            rs.getString("address"),
+                            rs.getString("city"),
+                            rs.getString("postal_code"),
+                            rs.getString("country"),
+                            rs.getString("state")))
+                    .withKind(UserAccountKind.of(rs.getString("kind")))
+                    .build();
+
+        }
+
+        return new UserBuilder().withId(rs.getInt("id"))
+                .withUsername(rs.getString("username"))
+                .withHashedPassword(rs.getString("password"))
+                .withName(rs.getString("name"))
+                .withSurname(rs.getString("surname"))
+                .withRole(UserRole.ADMIN)
+                .withActive(rs.getInt("active") == 1)
+                .build();
     }
 }

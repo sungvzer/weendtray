@@ -91,6 +91,7 @@
          <Text text="Piano tariffario:" />
          <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
          <ChoiceBox fx:id="phonePlanChoiceBox" disable="true" />
+         <ChoiceBox fx:id="accountKindChoiceBox" disable="true" />
       </HBox>
    </VBox>
    <ToolBar prefHeight="40.0" prefWidth="200.0">
