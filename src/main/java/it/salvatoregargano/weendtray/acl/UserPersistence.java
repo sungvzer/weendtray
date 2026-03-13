@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
 import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
@@ -23,6 +25,21 @@ import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
  * @see User
  */
 public class UserPersistence {
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
+    private static UserPersistence instance = null;
+
+    private UserPersistence() {
+        LoggerInjector.inject(this);
+    }
+
+    public static UserPersistence getInstance() {
+        if (instance == null) {
+            instance = new UserPersistence();
+        }
+        return instance;
+    }
+
     /**
      * Gets a user by its id.
      * 
@@ -30,8 +47,8 @@ public class UserPersistence {
      * @return the user with the specified id, or null if no user with the specified
      *         id exists
      */
-    public static User getUserById(int id) {
-        var logger = CombinedLogger.getInstance();
+    public User getUserById(int id) {
+        var logger = loggerProvider.createLogger();
         if (id < 0) {
             return null;
         }
@@ -56,8 +73,8 @@ public class UserPersistence {
      *
      * @param user The user to create.
      */
-    private static void createUser(User user) {
-        var logger = CombinedLogger.getInstance();
+    private void createUser(User user) {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() != -1) {
             return;
@@ -101,8 +118,8 @@ public class UserPersistence {
      * @throws MissingAddressException if the user is a regular user and does not
      *                                 have an address
      */
-    private static void saveUserAddress(User user) throws MissingAddressException {
-        var logger = CombinedLogger.getInstance();
+    private void saveUserAddress(User user) throws MissingAddressException {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() == -1) {
             return;
@@ -137,8 +154,8 @@ public class UserPersistence {
         }
     }
 
-    private static void updateUserAddress(RegularUser regularUser) {
-        var logger = CombinedLogger.getInstance();
+    private void updateUserAddress(RegularUser regularUser) {
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
                 "UPDATE `user_address` SET `address` = ?, `city` = ?, `postal_code` = ?, `country` = ?, `state` = ? WHERE `user_id` = ?")) {
             statement.setString(1, regularUser.getAddress().getAddress());
@@ -154,8 +171,8 @@ public class UserPersistence {
         }
     }
 
-    private static void insertUserAddress(RegularUser regularUser) {
-        var logger = CombinedLogger.getInstance();
+    private void insertUserAddress(RegularUser regularUser) {
+        var logger = loggerProvider.createLogger();
 
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
                 "INSERT INTO `user_address` (`user_id`, `address`, `city`, `postal_code`, `country`, `state`) VALUES (?, ?, ?, ?, ?, ?)")) {
@@ -179,8 +196,8 @@ public class UserPersistence {
      *
      * @param user The user to update.
      */
-    private static void updateUserById(User user) {
-        var logger = CombinedLogger.getInstance();
+    private void updateUserById(User user) {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() == -1) {
             return;
@@ -214,8 +231,8 @@ public class UserPersistence {
     /**
      * Search for a user by its phone number.
      */
-    public static RegularUser getUserByPhoneNumber(String userPhoneNumber) {
-        var logger = CombinedLogger.getInstance();
+    public RegularUser getUserByPhoneNumber(String userPhoneNumber) {
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement(
                         "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id WHERE `phonenumber` = ?")) {
@@ -236,8 +253,8 @@ public class UserPersistence {
      *
      * @param user The user to save.
      */
-    public static void saveUser(User user) {
-        var logger = CombinedLogger.getInstance();
+    public void saveUser(User user) {
+        var logger = loggerProvider.createLogger();
         try {
             DatabaseConnection.getInstance().getConnection().setAutoCommit(false);
 
@@ -279,8 +296,8 @@ public class UserPersistence {
      *
      * @return true if at least one admin user exists, false otherwise.
      */
-    public static boolean atLeastOneAdminUser() {
-        var logger = CombinedLogger.getInstance();
+    public boolean atLeastOneAdminUser() {
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement("SELECT COUNT(*) FROM `user` WHERE `role` = ?")) {
             statement.setString(1, UserRole.ADMIN.toString());
@@ -300,8 +317,8 @@ public class UserPersistence {
      * 
      * @param user the user to promote to admin
      */
-    public static void promoteUser(User user) {
-        var logger = CombinedLogger.getInstance();
+    public void promoteUser(User user) {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() == -1) {
             return;
@@ -325,10 +342,10 @@ public class UserPersistence {
      * 
      * @return an ArrayList of all users in the database.
      */
-    public static ArrayList<User> listUsers() {
+    public ArrayList<User> listUsers() {
         ArrayList<User> users = new ArrayList<>();
 
-        var logger = CombinedLogger.getInstance();
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement(
                         "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id")) {
@@ -354,8 +371,8 @@ public class UserPersistence {
      * @return true if the phone number is already in use by another user, false
      *         otherwise
      */
-    public static boolean isPhoneNumberInUse(String phoneNumber) {
-        var logger = CombinedLogger.getInstance();
+    public boolean isPhoneNumberInUse(String phoneNumber) {
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement("SELECT COUNT(*) FROM `user` WHERE `phonenumber` = ?")) {
             statement.setString(1, phoneNumber);
@@ -376,8 +393,8 @@ public class UserPersistence {
      * 
      * @param username the username of the user to retrieve
      */
-    public static User getUserByUsername(String username) {
-        var logger = CombinedLogger.getInstance();
+    public User getUserByUsername(String username) {
+        var logger = loggerProvider.createLogger();
         try (var statement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement(
                         "SELECT `user`.*, user_address.address, user_address.city, user_address.postal_code, user_address.country, user_address.state FROM `user` LEFT JOIN user_address ON `user`.id = user_address.user_id WHERE `username` = ?")) {
@@ -402,8 +419,8 @@ public class UserPersistence {
      * enable or disable user accounts without permanently deleting them from the
      * database.
      */
-    public static void toggleUser(User user) {
-        var logger = CombinedLogger.getInstance();
+    public void toggleUser(User user) {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() == -1) {
             return;
@@ -424,8 +441,8 @@ public class UserPersistence {
 
     }
 
-    public static void changeUserPlan(User user, PhonePlan phonePlan) {
-        var logger = CombinedLogger.getInstance();
+    public void changeUserPlan(User user, PhonePlan phonePlan) {
+        var logger = loggerProvider.createLogger();
 
         if (user.getId() == -1) {
             return;
@@ -445,7 +462,7 @@ public class UserPersistence {
                 "User plan changed: " + user.getId() + " (" + user.getUsername() + "), now " + phonePlan.toString());
     }
 
-    private static User fromResultSet(ResultSet rs) throws SQLException {
+    private User fromResultSet(ResultSet rs) throws SQLException {
         var role = UserRole.valueOf(rs.getString("role"));
         if (role == UserRole.USER) {
             return new UserBuilder().withId(rs.getInt("id"))

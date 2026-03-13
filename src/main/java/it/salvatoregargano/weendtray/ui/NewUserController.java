@@ -103,12 +103,12 @@ public class NewUserController {
             return;
         }
 
-        if (UserPersistence.getUserByUsername(usernameField.getText()) != null) {
+        if (UserPersistence.getInstance().getUserByUsername(usernameField.getText()) != null) {
             AlertFactory.createAlert(AlertType.ERROR, "Il nome utente è già in uso.").showAndWait();
             return;
         }
 
-        if (UserPersistence.isPhoneNumberInUse(phoneNumberField.getText())) {
+        if (UserPersistence.getInstance().isPhoneNumberInUse(phoneNumberField.getText())) {
             AlertFactory.createAlert(AlertType.ERROR, "Il numero di telefono è già in uso.").showAndWait();
             return;
         }
@@ -128,7 +128,7 @@ public class NewUserController {
                 .withKind(accountKind)
                 .withAddress(address).build();
 
-        UserPersistence.saveUser(user);
+        UserPersistence.getInstance().saveUser(user);
         surnameField.getScene().getWindow().hide();
     }
 }

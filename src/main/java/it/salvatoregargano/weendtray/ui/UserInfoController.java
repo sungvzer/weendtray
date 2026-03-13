@@ -159,14 +159,14 @@ public class UserInfoController {
             return;
         }
 
-        User userWithNewUsername = UserPersistence.getUserByUsername(usernameTextField.getText());
+        User userWithNewUsername = UserPersistence.getInstance().getUserByUsername(usernameTextField.getText());
         if (userWithNewUsername != null && userWithNewUsername.getId() != user.getId()) {
             AlertFactory.createAlert(Alert.AlertType.ERROR, "Il nome utente è già in uso.").showAndWait();
             return;
         }
 
         if (!phoneTextField.getText().equals(((RegularUser) user).getPhoneNumber())
-                && UserPersistence.isPhoneNumberInUse(phoneTextField.getText())) {
+                && UserPersistence.getInstance().isPhoneNumberInUse(phoneTextField.getText())) {
             AlertFactory.createAlert(Alert.AlertType.ERROR, "Il numero di telefono è già in uso.").showAndWait();
             return;
         }
@@ -186,7 +186,7 @@ public class UserInfoController {
             ((RegularUser) user).setAddress(address);
             ((RegularUser) user).setKind(UserAccountKind.valueOf(accountKindChoiceBox.getValue()));
         }
-        UserPersistence.saveUser(user);
+        UserPersistence.getInstance().saveUser(user);
         loadUser(user);
 
         isEditing.set(false);
@@ -203,7 +203,8 @@ public class UserInfoController {
     private void handleDisableUser() {
         if (user != null) {
             if (user.isAdminProperty().get()
-                    && UserPersistence.listUsers().stream().filter((u) -> u.isAdminProperty().get()).count() == 1) {
+                    && UserPersistence.getInstance().listUsers().stream().filter((u) -> u.isAdminProperty().get())
+                            .count() == 1) {
                 AlertFactory
                         .createAlert(Alert.AlertType.ERROR,
                                 "Impossibile disattivare l'utente: è l'unico admin del sistema.")
@@ -217,7 +218,7 @@ public class UserInfoController {
                     .showAndWait();
             if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 user.setActive(!user.isActive());
-                UserPersistence.saveUser(user);
+                UserPersistence.getInstance().saveUser(user);
             }
 
             loadUser(user);
@@ -228,7 +229,7 @@ public class UserInfoController {
     private void handleEnableUser() {
         if (user != null) {
             user.setActive(true);
-            UserPersistence.saveUser(user);
+            UserPersistence.getInstance().saveUser(user);
             loadUser(user);
         }
     }

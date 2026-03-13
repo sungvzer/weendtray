@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.patterns.Observable;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
@@ -20,7 +22,11 @@ import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 public class WalletService extends Observable<Wallet> {
     private static WalletService instance;
 
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
+
     private WalletService() {
+        LoggerInjector.inject(this);
     }
 
     public static WalletService getInstance() {
@@ -31,7 +37,7 @@ public class WalletService extends Observable<Wallet> {
     }
 
     public Wallet getWallet(int userId) throws SQLException {
-        User user = UserPersistence.getUserById(userId);
+        User user = UserPersistence.getInstance().getUserById(userId);
 
         try (var preparedStatement = DatabaseConnection.getInstance().getConnection()
                 .prepareStatement("SELECT * FROM wallet WHERE user_id = ?")) {
@@ -70,7 +76,7 @@ public class WalletService extends Observable<Wallet> {
     }
 
     public void addMessages(Wallet wallet, int messages) throws SQLException {
-        final var logger = CombinedLogger.getInstance();
+        final var logger = loggerProvider.createLogger();
         if (wallet == null) {
             logger.error("Tried to add messages to a null wallet");
             return;
@@ -89,7 +95,7 @@ public class WalletService extends Observable<Wallet> {
     }
 
     public void addMinutes(Wallet wallet, int minutes) throws SQLException {
-        final var logger = CombinedLogger.getInstance();
+        final var logger = loggerProvider.createLogger();
         if (wallet == null) {
             logger.error("Tried to add minutes to a null wallet");
             return;
@@ -108,7 +114,7 @@ public class WalletService extends Observable<Wallet> {
     }
 
     public void addData(Wallet wallet, double dataMB) throws SQLException {
-        final var logger = CombinedLogger.getInstance();
+        final var logger = loggerProvider.createLogger();
         if (wallet == null) {
             logger.error("Tried to add data to a null wallet");
             return;
@@ -128,7 +134,7 @@ public class WalletService extends Observable<Wallet> {
     }
 
     public void addAmountToWallet(Wallet wallet, double amount) throws SQLException {
-        final var logger = CombinedLogger.getInstance();
+        final var logger = loggerProvider.createLogger();
         if (wallet == null) {
             logger.error("Tried to charge a null wallet");
             return;
@@ -152,7 +158,7 @@ public class WalletService extends Observable<Wallet> {
             updatedWallet = getWallet(event.getUserId());
             super.notifyObservers(updatedWallet);
         } catch (SQLException e) {
-            CombinedLogger.getInstance().error("Could not retrieve updated wallet for user id " + event.getUserId());
+            loggerProvider.createLogger().error("Could not retrieve updated wallet for user id " + event.getUserId());
         }
     }
 

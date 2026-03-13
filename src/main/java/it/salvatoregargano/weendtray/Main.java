@@ -16,7 +16,9 @@ import it.salvatoregargano.weendtray.acl.CredentialsService;
 import it.salvatoregargano.weendtray.acl.CredentialsServiceError;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.persistence.MigrationRunner;
 import it.salvatoregargano.weendtray.ui.SceneFactory;
 import javafx.application.Application;
@@ -33,6 +35,9 @@ public class Main extends Application {
     public static final String executionId = UUID.randomUUID().toString();
     public static final String I18N_BUNDLE_NAME = "messages";
     public static final Locale I18N_DEFAULT_LOCALE = Locale.ITALIAN;
+
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
 
     void tryLoadFont() {
         String[] weights = { "Thin", "Light", "Bold", "Black" };
@@ -64,10 +69,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        LoggerInjector.inject(this);
         try {
             MigrationRunner.runMigrations();
         } catch (SQLException | IOException | URISyntaxException e) {
-            CombinedLogger.getInstance()
+            loggerProvider.createLogger()
                     .error("An error occurred while running the migrations.\n" + Arrays.toString(e.getStackTrace()));
             System.exit(1);
         }
@@ -84,15 +90,17 @@ public class Main extends Application {
                 }
                 int userId = Integer.parseInt(parts[0]);
                 String sessionToken = parts[1];
-                User user = UserPersistence.getUserById(userId);
+                User user = UserPersistence.getInstance().getUserById(userId);
                 if (user == null) {
                     throw new IOException("User not found for session token.");
                 }
                 CredentialsService.getInstance().resumeSession(user, sessionToken);
             } catch (IOException e) {
-                CombinedLogger.getInstance().error("Error while reading session token from file: " + e.getMessage());
+                loggerProvider.createLogger()
+                        .error("Error while reading session token from file: " + e.getMessage());
             } catch (CredentialsServiceError e) {
-                CombinedLogger.getInstance().error("Error while logging in with session token: " + e.getMessage());
+                loggerProvider.createLogger()
+                        .error("Error while logging in with session token: " + e.getMessage());
             }
         }
 
@@ -101,7 +109,7 @@ public class Main extends Application {
         if (CredentialsService.getInstance().getLoggedUser() != null) {
             homePage = getClass().getResource("HomePage.fxml");
         } else {
-            if (!UserPersistence.atLeastOneAdminUser()) {
+            if (!UserPersistence.getInstance().atLeastOneAdminUser()) {
                 homePage = getClass().getResource("AdminFirstPage.fxml");
             } else {
                 homePage = getClass().getResource("LoginPage.fxml");

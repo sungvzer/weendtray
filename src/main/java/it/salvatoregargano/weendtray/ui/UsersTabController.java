@@ -9,7 +9,9 @@ import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserAddress;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.telephone.billing.Wallet;
 import it.salvatoregargano.weendtray.telephone.billing.WalletService;
 import it.salvatoregargano.weendtray.ui.icons.IconFactory;
@@ -41,6 +43,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class UsersTabController {
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
     @FXML
     private TableColumn<User, Integer> idColumn;
     @FXML
@@ -66,8 +70,12 @@ public class UsersTabController {
 
     private ObservableList<User> userObservableList;
 
+    public UsersTabController() {
+        LoggerInjector.inject(this);
+    }
+
     public void initialize() {
-        var users = UserPersistence.listUsers();
+        var users = UserPersistence.getInstance().listUsers();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -137,7 +145,7 @@ public class UsersTabController {
                             }
                         };
                     } catch (SQLException e) {
-                        CombinedLogger.getInstance().error("Could not retrieve wallet for user "
+                        loggerProvider.createLogger().error("Could not retrieve wallet for user "
                                 + cellData.getValue().getUsername() + ": " + e.getMessage());
                         AlertFactory
                                 .createAlert(Alert.AlertType.ERROR,
@@ -259,13 +267,13 @@ public class UsersTabController {
                                 userStage.showAndWait();
 
                                 userObservableList.set(userObservableList.indexOf(selectedUser),
-                                        UserPersistence.getUserById(selectedUser.getId()));
+                                        UserPersistence.getInstance().getUserById(selectedUser.getId()));
                             } catch (IOException e) {
                                 AlertFactory
                                         .createAlert(Alert.AlertType.ERROR,
                                                 "Errore non recuperabile, l'applicazione terminerà una volta chiuso questo menù.")
                                         .showAndWait();
-                                CombinedLogger.getInstance().error("Could not load user info: " + e.getMessage());
+                                loggerProvider.createLogger().error("Could not load user info: " + e.getMessage());
                                 System.exit(1);
                             }
                         });
@@ -293,7 +301,7 @@ public class UsersTabController {
                                 final var userIndex = userObservableList.indexOf(selectedUser);
 
                                 selectedUser.setActive(!selectedUser.isActive());
-                                UserPersistence.saveUser(selectedUser);
+                                UserPersistence.getInstance().saveUser(selectedUser);
                                 userObservableList.set(userIndex, selectedUser);
                             }
                         });
@@ -306,7 +314,7 @@ public class UsersTabController {
                             }
 
                             selectedUser.setActive(!selectedUser.isActive());
-                            UserPersistence.saveUser(selectedUser);
+                            UserPersistence.getInstance().saveUser(selectedUser);
                             userObservableList.set(userIndex, selectedUser);
                         });
                     }
@@ -415,7 +423,7 @@ public class UsersTabController {
             newUserStage.setResizable(false);
             newUserStage.showAndWait();
 
-            this.userObservableList.setAll(UserPersistence.listUsers());
+            this.userObservableList.setAll(UserPersistence.getInstance().listUsers());
         } catch (IOException e) {
             e.printStackTrace();
         }

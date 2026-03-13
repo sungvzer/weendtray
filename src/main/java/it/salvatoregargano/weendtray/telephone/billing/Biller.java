@@ -1,7 +1,9 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
 import it.salvatoregargano.weendtray.acl.UserPersistence;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.patterns.Observer;
 import it.salvatoregargano.weendtray.telephone.CallEvent;
 import it.salvatoregargano.weendtray.telephone.DataUsageEvent;
@@ -21,8 +23,11 @@ import it.salvatoregargano.weendtray.telephone.PhoneEvent;
  */
 public class Biller implements Observer<PhoneEvent> {
     private static Biller instance;
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
 
     private Biller() {
+        LoggerInjector.inject(this);
     }
 
     public static Biller getInstance() {
@@ -39,9 +44,9 @@ public class Biller implements Observer<PhoneEvent> {
      */
     @Override
     public void update(PhoneEvent event) {
-        final var logger = CombinedLogger.getInstance();
+        final var logger = loggerProvider.createLogger();
         double billableCost = 0;
-        final var user = UserPersistence.getUserByPhoneNumber(event.getSourceNumber());
+        final var user = UserPersistence.getInstance().getUserByPhoneNumber(event.getSourceNumber());
         if (user == null) {
             logger.error("Could not bill non-existent user with phone number " + event.getSourceNumber());
             return;
