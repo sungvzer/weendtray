@@ -58,6 +58,9 @@ public class UserDashboardController implements Observer<Wallet> {
         @FXML
         private Button smsBtn;
 
+        @FXML
+        private Button internetBtn;
+
         private RegularUser user;
 
         private Wallet userWallet;
@@ -95,6 +98,16 @@ public class UserDashboardController implements Observer<Wallet> {
         }
 
         private void refreshUI() {
+                if (userWallet.getBalance() < 0) {
+                        callBtn.setDisable(true);
+                        smsBtn.setDisable(true);
+                        internetBtn.setDisable(true);
+                } else {
+                        callBtn.setDisable(false);
+                        smsBtn.setDisable(false);
+                        internetBtn.setDisable(false);
+                }
+
                 var userPlanKind = user.getKind();
 
                 userPhonePlan.setText("Piano Tariffario Attivo: " + user.getPhonePlan().toString());

@@ -112,6 +112,17 @@ public class HomePageController implements Observer<Wallet> {
 
     private void refreshWalletInfo(Wallet w) {
         updateHelloField(w.getBalance());
+        double balance = w.getBalance();
+
+        if (balance < 0) {
+            AlertFactory.createAlert(AlertType.WARNING, "Il tuo credito è negativo!").showAndWait();
+            messagesTab.setDisable(true);
+            internetTab.setDisable(true);
+            tabPane.getSelectionModel().selectFirst();
+        } else {
+            messagesTab.setDisable(false);
+            internetTab.setDisable(false);
+        }
     }
 
     public void onLogout() {
