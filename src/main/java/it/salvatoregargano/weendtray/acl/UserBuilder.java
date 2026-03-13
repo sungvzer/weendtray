@@ -5,7 +5,6 @@ import java.util.Optional;
 /**
  * Helper class for building {@link User} objects.
  */
-
 public class UserBuilder implements Builder {
     private String username;
     private String hashedPassword;
@@ -43,7 +42,6 @@ public class UserBuilder implements Builder {
         return this;
     }
 
-
     @Override
     public UserBuilder withPlainTextPassword(String plainTextPassword) {
         hashedPassword = User.hashPassword(plainTextPassword);
@@ -69,10 +67,9 @@ public class UserBuilder implements Builder {
     }
 
     @Override
-    public User build() {        
+    public User build() {
         var adminUser = new User(username, hashedPassword, name, surname, role, active);
         adminUser.setId(id.orElse(-1));
         return adminUser;
-        
     }
 }
