@@ -94,9 +94,10 @@
                 <Button fx:id="callBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0"
                     text="Chiama" />
                 <Button fx:id="smsBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0"
-                    text="Invia SMS" />
-                <Button fx:id="dataBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0"
-                    text="Usa Dati" />
+                    text="SMS" />
+                <Button onAction="#onInternet" mnemonicParsing="false" prefHeight="40.0"
+                    prefWidth="100.0"
+                    text="Internet" />
             </children>
             <padding>
                 <Insets bottom="20.0" />

@@ -8,10 +8,13 @@ import it.salvatoregargano.weendtray.patterns.Observer;
 import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 import it.salvatoregargano.weendtray.telephone.billing.Wallet;
 import it.salvatoregargano.weendtray.telephone.billing.WalletService;
+import it.salvatoregargano.weendtray.utils.StringFormatter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 
 public class UserDashboardController implements Observer<Wallet> {
@@ -55,12 +58,20 @@ public class UserDashboardController implements Observer<Wallet> {
         @FXML
         private Button smsBtn;
 
-        @FXML
-        private Button dataBtn;
-
         private RegularUser user;
 
         private Wallet userWallet;
+
+        @FXML
+        private void onInternet() {
+                TabPane tabPane = (TabPane) userPlanType.getScene().lookup("#tabPane");
+
+                Tab internetTab = tabPane.getTabs().stream().filter(tab -> "internetTab".equals(tab.getId()))
+                                .findFirst()
+                                .orElse(null);
+
+                tabPane.getSelectionModel().select(internetTab);
+        }
 
         @FXML
         private void initialize() throws SQLException {
@@ -85,23 +96,23 @@ public class UserDashboardController implements Observer<Wallet> {
                         renewalLabel.setManaged(false);
                         renewalLabel.setVisible(false);
                 } else {
-                        userDataTraffic.setText(userWallet.getDataCount() + " MB" + " / "
-                                        + user.getPhonePlan().getDataLimitMB() + " MB");
-                        userCallMinutes.setText(
-                                        userWallet.getMinutesCount() + " min" + " / "
-                                                        + user.getPhonePlan().getMinutesLimit() + " min");
-                        userMessagesAmount.setText(
-                                        userWallet.getMessagesCount() + " sms" + " / "
-                                                        + user.getPhonePlan().getMessagesLimit() + " sms");
+                        long dataLimitBytes = (long) (user.getPhonePlan().getDataLimitMB() * 1024 * 1024);
+                        long dataUsedBytes = (long) (userWallet.getDataCount() * 1024 * 1024);
+                        String humanReadableDataUsed = StringFormatter.humanReadableByteCountBin(dataUsedBytes);
+                        String humanReadableDataLimit = StringFormatter.humanReadableByteCountBin(dataLimitBytes);
+                        userDataTraffic.setText(
+                                        String.format("%s / %s", humanReadableDataUsed, humanReadableDataLimit));
+                        userCallMinutes.setText(String.format("%d min / %d min", userWallet.getMinutesCount(),
+                                        user.getPhonePlan().getMinutesLimit()));
+                        userMessagesAmount.setText(String.format("%d sms / %d sms", userWallet.getMessagesCount(),
+                                        user.getPhonePlan().getMessagesLimit()));
                         dataProgress.setProgress(userWallet.getDataCount() / user.getPhonePlan().getDataLimitMB());
                         callProgress.setProgress(
                                         userWallet.getMinutesCount() / (double) user.getPhonePlan().getMinutesLimit());
                         smsProgress.setProgress(userWallet.getMessagesCount()
                                         / (double) user.getPhonePlan().getMessagesLimit());
-
                         renewalLabel.setText(String.format("Costo rinnovo: %.2f €/mese",
                                         user.getPhonePlan().getRenewalCost()));
-
                 }
         }
 

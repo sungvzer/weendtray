@@ -20,6 +20,17 @@ import it.salvatoregargano.weendtray.telephone.PhoneEvent;
  * billing process.
  */
 public class Biller implements Observer<PhoneEvent> {
+    private static Biller instance;
+
+    private Biller() {
+    }
+
+    public static Biller getInstance() {
+        if (instance == null) {
+            instance = new Biller();
+        }
+        return instance;
+    }
 
     /**
      * Handles the update of a phone event by calculating the billable cost based on
@@ -77,24 +88,79 @@ public class Biller implements Observer<PhoneEvent> {
                     + billableCost);
         }
 
-        if (accountKind.equals(UserAccountKind.PAY_AS_YOU_GO)) {
+        if (accountKind.equals(UserAccountKind.FIXED_COST)) {
             if (event instanceof MessageEvent messageEvent) {
                 try {
-                    WalletService.getInstance().addMessages(userWallet,
-                            messageEvent.getContent().length() > 160 ? -2 : -1);
+                    int messageLength = messageEvent.getContent().length();
+                    double messageCost = billingStrategy.calculateMessageCost(messageEvent);
+                    if (userWallet.getMessagesCount() <= 0) {
+                        logger.warn("User " + user.getId() + " has no messages left, but sent a message of length "
+                                + messageLength + ". Charging for the message.");
+                        WalletService.getInstance().addAmountToWallet(userWallet, -messageCost);
+                        return;
+                    }
+                    int messagesToCharge = messageLength > 160 ? 2 : 1;
+                    if (userWallet.getMessagesCount() < messagesToCharge) {
+                        int remaining = messagesToCharge - userWallet.getMessagesCount();
+                        logger.warn("User " + user.getId() + " has only " + userWallet.getMessagesCount()
+                                + " messages left, but sent a message of length " + messageLength
+                                + ". Charging for the remaining " + remaining + " messages.");
+                        WalletService.getInstance().addAmountToWallet(userWallet, -messageCost * remaining);
+                        WalletService.getInstance().addMessages(userWallet, -userWallet.getMessagesCount());
+                        return;
+                    }
+
+                    WalletService.getInstance().addMessages(userWallet, -messagesToCharge);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (event instanceof CallEvent callEvent) {
                 try {
-                    WalletService.getInstance().addMinutes(userWallet,
-                            -((int) callEvent.getDuration().toSeconds() / 60));
+                    int minutesToCharge = (int) callEvent.getDuration().toSeconds() / 60;
+                    if (userWallet.getMinutesCount() <= 0) {
+                        logger.warn("User " + user.getId() + " has no minutes left, but made a call of duration "
+                                + callEvent.getDuration() + ". Charging for the call.");
+                        WalletService.getInstance().addAmountToWallet(userWallet,
+                                -billingStrategy.calculateCallCost(callEvent));
+                        return;
+                    }
+                    if (userWallet.getMinutesCount() < minutesToCharge) {
+                        int remaining = minutesToCharge - userWallet.getMinutesCount();
+                        logger.warn("User " + user.getId() + " has only " + userWallet.getMinutesCount()
+                                + " minutes left, but made a call of duration " + callEvent.getDuration()
+                                + ". Charging for the remaining " + remaining + " minutes.");
+                        WalletService.getInstance().addAmountToWallet(userWallet,
+                                -billingStrategy.calculateCallCost(callEvent));
+                        WalletService.getInstance().addMinutes(userWallet, -userWallet.getMinutesCount());
+                        return;
+                    }
+
+                    WalletService.getInstance().addMinutes(userWallet, -minutesToCharge);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (event instanceof DataUsageEvent dataUsage) {
                 try {
-                    WalletService.getInstance().addData(userWallet, -(dataUsage.getDataSizeKB() / 1024.0));
+                    double dataToCharge = dataUsage.getDataSizeKB() / 1024.0;
+                    if (userWallet.getDataCount() <= 0) {
+                        logger.warn("User " + user.getId() + " has no data left, but used " + dataToCharge
+                                + " MB. Charging for the data.");
+                        WalletService.getInstance().addAmountToWallet(userWallet,
+                                -billingStrategy.calculateDataCost(dataUsage));
+                        return;
+                    }
+                    if (userWallet.getDataCount() < dataToCharge) {
+                        double remaining = dataToCharge - userWallet.getDataCount();
+                        logger.warn("User " + user.getId() + " has only " + userWallet.getDataCount()
+                                + " MB left, but used " + dataToCharge + " MB. Charging for the remaining " + remaining
+                                + " MB.");
+                        WalletService.getInstance().addAmountToWallet(userWallet,
+                                -billingStrategy.calculateDataCost(dataUsage));
+                        WalletService.getInstance().addData(userWallet, -userWallet.getDataCount());
+                        return;
+                    }
+
+                    WalletService.getInstance().addData(userWallet, -dataToCharge);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

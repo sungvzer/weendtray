@@ -22,5 +22,6 @@
         <Tab fx:id="usersTab" closable="false" text="Utenti" />
         <Tab fx:id="userDashboardTab" closable="false" text="Dashboard" />
         <Tab fx:id="topUpTab" closable="false" text="Ricarica" />
+        <Tab fx:id="internetTab" closable="false" text="Internet" />
     </TabPane>
 </VBox>
