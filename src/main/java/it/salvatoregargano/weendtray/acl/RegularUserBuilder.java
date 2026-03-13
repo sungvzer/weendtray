@@ -8,96 +8,98 @@ import it.salvatoregargano.weendtray.telephone.billing.UserAccountKind;
 /**
  * Helper class for building {@link User} objects.
  */
-public class UserBuilder implements Builder {
+public class RegularUserBuilder implements Builder {
     private String username;
     private String hashedPassword;
-    private UserRole role;
     private String name;
     private String surname;
     private String phoneNumber;
+    private UserRole role;
     private PhonePlan phonePlan;
     private Optional<Integer> id;
     private Optional<UserAddress> address;
     private Optional<UserAccountKind> kind;
     private boolean active = true;
 
-    public UserBuilder() {
+    public RegularUserBuilder() {
         id = Optional.empty();
         address = Optional.empty();
         kind = Optional.empty();
     }
 
     @Override
-    public UserBuilder withId(int id) {
+    public RegularUserBuilder withId(int id) {
         this.id = Optional.of(id);
         return this;
     }
 
-    public UserBuilder withName(String name) {
+    @Override
+    public RegularUserBuilder withName(String name) {
         this.name = name;
         return this;
     }
 
-    public UserBuilder withSurname(String surname) {
+    @Override
+    public RegularUserBuilder withSurname(String surname) {
         this.surname = surname;
         return this;
     }
 
-    public UserBuilder withPhoneNumber(String phoneNumber) {
+    public RegularUserBuilder withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
 
-    public UserBuilder withPhonePlan(PhonePlan phonePlan) {
+    public RegularUserBuilder withPhonePlan(PhonePlan phonePlan) {
         this.phonePlan = phonePlan;
         return this;
     }
 
-    public UserBuilder withUsername(String username) {
+    public RegularUserBuilder withUsername(String username) {
         this.username = username;
         return this;
     }
 
-    public UserBuilder withPlainTextPassword(String plainTextPassword) {
+    @Override
+    public RegularUserBuilder withPlainTextPassword(String plainTextPassword) {
         hashedPassword = User.hashPassword(plainTextPassword);
         return this;
     }
 
-    public UserBuilder withHashedPassword(String hashedPassword) {
+    @Override
+    public RegularUserBuilder withHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
         return this;
     }
 
-    public UserBuilder withRole(UserRole role) {
+    @Override
+    public RegularUserBuilder withRole(UserRole role) {
         this.role = role;
         return this;
     }
 
-    public UserBuilder withAddress(UserAddress address) {
+    public RegularUserBuilder withAddress(UserAddress address) {
         this.address = Optional.of(address);
         return this;
     }
 
-    public UserBuilder withKind(UserAccountKind kind) {
+    public RegularUserBuilder withKind(UserAccountKind kind) {
         this.kind = Optional.of(kind);
         return this;
     }
 
-    public UserBuilder withActive(boolean active) {
+    @Override
+    public RegularUserBuilder withActive(boolean active) {
         this.active = active;
         return this;
     }
 
-    public User build() {
-        if (role == UserRole.USER) {
-            var regularUser = new RegularUser(username, hashedPassword, name, surname, phonePlan, phoneNumber, active,
-                    address.orElse(null), kind.orElse(null));
-            regularUser.setId(id.orElse(-1));
-            return regularUser;
-        } else {
-            var user = new User(username, hashedPassword, name, surname, role, active);
-            user.setId(id.orElse(-1));
-            return user;
-        }
+    @Override
+    public RegularUser build() {        
+        var regularUser = new RegularUser(username, hashedPassword, name, surname, phonePlan, phoneNumber, active,
+            address.orElse(null), kind.orElse(null));
+        regularUser.setId(id.orElse(-1));
+        return regularUser;
+        
     }
 }
