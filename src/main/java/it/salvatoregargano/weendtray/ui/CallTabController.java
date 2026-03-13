@@ -5,7 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class callTabController {
+public class CallTabController {
     @FXML
     private TextField numberTextField;
 

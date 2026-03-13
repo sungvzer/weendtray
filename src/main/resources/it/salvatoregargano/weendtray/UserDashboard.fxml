@@ -9,7 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="500.0" prefWidth="500.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.salvatoregargano.weendtray.ui.UserDashboardController">
+<VBox prefHeight="500.0" prefWidth="500.0" spacing="10.0" xmlns="http://javafx.com/javafx/25"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="it.salvatoregargano.weendtray.ui.UserDashboardController">
     <children>
 
         <VBox spacing="5.0" style="-fx-border-color: #cccccc;">
@@ -47,7 +49,8 @@
                     <children>
                         <HBox>
                             <children>
-                                <Label maxWidth="Infinity" prefHeight="17.0" prefWidth="392.0" text="Traffico Dati" HBox.hgrow="ALWAYS" />
+                                <Label maxWidth="Infinity" prefHeight="17.0" prefWidth="392.0"
+                                    text="Traffico Dati" HBox.hgrow="ALWAYS" />
                                 <Label fx:id="userDataTraffic" text="0" />
                             </children>
                         </HBox>
@@ -92,9 +95,12 @@
 
         <HBox alignment="CENTER" spacing="10.0">
             <children>
-                <Button fx:id="callBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Chiama" />
-                <Button fx:id="smsBtn" mnemonicParsing="false" onAction="#onMessages" prefHeight="40.0" text="SMS" />
-                <Button fx:id="internetBtn" mnemonicParsing="false" onAction="#onInternet" prefHeight="40.0" prefWidth="100.0" text="Internet" />
+                <Button fx:id="callBtn" mnemonicParsing="false" onAction="#onCall" prefHeight="40.0"
+                    prefWidth="100.0" text="Chiama" />
+                <Button fx:id="smsBtn" mnemonicParsing="false" onAction="#onMessages"
+                    prefHeight="40.0" text="SMS" />
+                <Button fx:id="internetBtn" mnemonicParsing="false" onAction="#onInternet"
+                    prefHeight="40.0" prefWidth="100.0" text="Internet" />
             </children>
             <padding>
                 <Insets bottom="20.0" />

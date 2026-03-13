@@ -37,6 +37,8 @@ public class HomePageController implements Observer<Wallet> {
     Tab userDashboardTab;
     @FXML
     Tab messagesTab;
+    @FXML
+    Tab callTab;
 
     @FXML
     TabPane tabPane;
@@ -77,6 +79,7 @@ public class HomePageController implements Observer<Wallet> {
             tabPane.getTabs().remove(topUpTab);
             tabPane.getTabs().remove(internetTab);
             tabPane.getTabs().remove(messagesTab);
+            tabPane.getTabs().remove(callTab);
             helloField.setText("Ciao, %s! Sei un admin.".formatted(user.getUsername()));
         } else {
             tabPane.getTabs().remove(usersTab);
@@ -108,6 +111,7 @@ public class HomePageController implements Observer<Wallet> {
         initializeTab(topUpTab, "/it/salvatoregargano/weendtray/TopUp.fxml");
         initializeTab(internetTab, "/it/salvatoregargano/weendtray/InternetTab.fxml");
         initializeTab(messagesTab, "/it/salvatoregargano/weendtray/MessagesTab.fxml");
+        initializeTab(callTab, "/it/salvatoregargano/weendtray/CallTab.fxml");
     }
 
     private void refreshWalletInfo(Wallet w) {

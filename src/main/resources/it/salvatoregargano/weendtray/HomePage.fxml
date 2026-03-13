@@ -24,5 +24,6 @@
         <Tab fx:id="topUpTab" closable="false" text="Ricarica" />
         <Tab fx:id="internetTab" closable="false" text="Internet" />
         <Tab fx:id="messagesTab" closable="false" text="Messaggi" />
+        <Tab fx:id="callTab" closable="false" text="Chiamate" />
     </TabPane>
 </VBox>
