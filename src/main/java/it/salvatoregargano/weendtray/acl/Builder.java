@@ -1,6 +1,7 @@
 package it.salvatoregargano.weendtray.acl;
 
 public interface Builder {
+    Builder withUsername(String username);
     Builder withId(int id);
     Builder withName(String name);
     Builder withSurname(String surname);
