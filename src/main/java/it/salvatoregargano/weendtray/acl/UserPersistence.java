@@ -465,7 +465,7 @@ public class UserPersistence {
     private User fromResultSet(ResultSet rs) throws SQLException {
         var role = UserRole.valueOf(rs.getString("role"));
         if (role == UserRole.USER) {
-            return new UserBuilder().withId(rs.getInt("id"))
+            return new RegularUserBuilder().withId(rs.getInt("id"))
                     .withUsername(rs.getString("username"))
                     .withHashedPassword(rs.getString("password"))
                     .withName(rs.getString("name"))

@@ -3,8 +3,8 @@ package it.salvatoregargano.weendtray.ui;
 import java.util.ArrayList;
 
 import it.salvatoregargano.weendtray.acl.RegularUser;
+import it.salvatoregargano.weendtray.acl.RegularUserBuilder;
 import it.salvatoregargano.weendtray.acl.UserAddress;
-import it.salvatoregargano.weendtray.acl.UserBuilder;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.telephone.billing.PhonePlan;
@@ -118,7 +118,7 @@ public class NewUserController {
 
         UserAccountKind accountKind = UserAccountKind.valueOf(accountKindChoiceBox.getValue());
 
-        RegularUser user = (RegularUser) new UserBuilder().withPlainTextPassword(passwordField.getText())
+        RegularUser user = new RegularUserBuilder().withPlainTextPassword(passwordField.getText())
                 .withUsername(usernameField.getText())
                 .withRole(UserRole.USER)
                 .withName(nameField.getText())
