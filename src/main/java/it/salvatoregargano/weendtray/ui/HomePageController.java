@@ -85,14 +85,22 @@ public class HomePageController implements Observer<Wallet> {
             try {
                 Wallet wallet = WalletService.getInstance().getWallet(regularUser.getId());
                 walletOptional = Optional.of(wallet);
+                if (walletOptional.isPresent()) {
+                    refreshWalletInfo(walletOptional.get());
+                } else {
+                    CombinedLogger.getInstance()
+                            .error("No wallet found for user %s".formatted(regularUser.getUsername()));
+                    AlertFactory.createAlert(AlertType.ERROR, "Impossibile recuperare il portafoglio")
+                            .showAndWait();
+                    System.exit(1);
+                }
             } catch (Exception e) {
                 CombinedLogger.getInstance().error("Could not retrieve wallet for user %s: %s"
                         .formatted(regularUser.getUsername(), e.getMessage()));
                 AlertFactory.createAlert(AlertType.ERROR, "Impossibile recuperare il portafoglio")
                         .showAndWait();
+                System.exit(1);
             }
-
-            updateHelloField(walletOptional.map(Wallet::getBalance).orElse(0.0));
         }
 
         initializeTab(usersTab, "/it/salvatoregargano/weendtray/UsersTab.fxml");
@@ -100,6 +108,10 @@ public class HomePageController implements Observer<Wallet> {
         initializeTab(topUpTab, "/it/salvatoregargano/weendtray/TopUp.fxml");
         initializeTab(internetTab, "/it/salvatoregargano/weendtray/InternetTab.fxml");
         initializeTab(messagesTab, "/it/salvatoregargano/weendtray/MessagesTab.fxml");
+    }
+
+    private void refreshWalletInfo(Wallet w) {
+        updateHelloField(w.getBalance());
     }
 
     public void onLogout() {
@@ -124,7 +136,7 @@ public class HomePageController implements Observer<Wallet> {
     @Override
     public void update(Wallet event) {
         if (CredentialsService.getInstance().getLoggedUser().getId() == event.getUserId()) {
-            updateHelloField(event.getBalance());
+            refreshWalletInfo(event);
         }
     }
 }
