@@ -62,11 +62,11 @@ public class PhonePlan {
     public double getDataLimitMB() {
         switch (name) {
             case "REGULAR":
-                return 500;
+                return 512;
             case "PREMIUM":
-                return 2000;
+                return 2048;
             case "BUSINESS":
-                return 5000;
+                return 5120;
             default:
                 throw new IllegalArgumentException("Unknown phone plan: " + name);
         }

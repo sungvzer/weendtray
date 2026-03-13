@@ -74,6 +74,17 @@ public class UserDashboardController implements Observer<Wallet> {
         }
 
         @FXML
+        private void onMessages() {
+                TabPane tabPane = (TabPane) userPlanType.getScene().lookup("#tabPane");
+
+                Tab messagesTab = tabPane.getTabs().stream().filter(tab -> "messagesTab".equals(tab.getId()))
+                                .findFirst()
+                                .orElse(null);
+
+                tabPane.getSelectionModel().select(messagesTab);
+        }
+
+        @FXML
         private void initialize() throws SQLException {
                 WalletService.getInstance().addObserver(this);
                 user = (RegularUser) CredentialsService.getInstance().getLoggedUser();

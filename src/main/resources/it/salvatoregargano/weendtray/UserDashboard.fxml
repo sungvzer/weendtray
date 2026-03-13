@@ -93,7 +93,7 @@
             <children>
                 <Button fx:id="callBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0"
                     text="Chiama" />
-                <Button fx:id="smsBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0"
+                <Button onAction="#onMessages" mnemonicParsing="false" prefHeight="40.0"
                     text="SMS" />
                 <Button onAction="#onInternet" mnemonicParsing="false" prefHeight="40.0"
                     prefWidth="100.0"
