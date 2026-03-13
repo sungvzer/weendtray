@@ -122,10 +122,12 @@ public class HomePageController implements Observer<Wallet> {
             AlertFactory.createAlert(AlertType.WARNING, "Il tuo credito è negativo!").showAndWait();
             messagesTab.setDisable(true);
             internetTab.setDisable(true);
+            callTab.setDisable(true);
             tabPane.getSelectionModel().selectFirst();
         } else {
             messagesTab.setDisable(false);
             internetTab.setDisable(false);
+            callTab.setDisable(false);
         }
     }
 

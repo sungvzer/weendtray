@@ -11,7 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Text;
 
 public class MessagesTabController extends Observable<PhoneEvent> {
@@ -37,6 +37,15 @@ public class MessagesTabController extends Observable<PhoneEvent> {
         maxCharCount.setText("160");
         usedCharCount.setText("0");
         messagesCount.setText("1");
+
+        recipientField.setTextFormatter(
+                new TextFormatter<String>(change -> {
+                    String newText = change.getControlNewText();
+                    if (newText.matches("\\d*")) {
+                        return change;
+                    }
+                    return null;
+                }));
     }
 
     @FXML
@@ -68,14 +77,6 @@ public class MessagesTabController extends Observable<PhoneEvent> {
         recipientField.clear();
         messageArea.clear();
         onMessageAreaKeyTyped();
-    }
-
-    @FXML
-    private void onRecipientFieldKeyTyped(KeyEvent ev) {
-        String c = ev.getCharacter();
-        if (c.matches("\\D")) {
-            recipientField.deletePreviousChar();
-        }
     }
 
 }

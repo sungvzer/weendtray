@@ -8,8 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 
 public class TopUpController {
     @FXML
@@ -32,39 +33,6 @@ public class TopUpController {
 
     @FXML
     private TextField amountTextField;
-
-    @FXML
-    private void handleCardNumberInput(KeyEvent event) {
-        String c = event.getCharacter();
-        if (c.matches("\\D") || cardNumberField.getText().length() > 16) {
-            cardNumberField.deletePreviousChar();
-        }
-    }
-
-    @FXML
-    private void handleExpiryDateInput(KeyEvent event) {
-        String c = event.getCharacter();
-
-        if (c.matches("[^0-9/]") || expiryDateField.getText().length() > 5) {
-            expiryDateField.deletePreviousChar();
-        }
-    }
-
-    @FXML
-    private void handleCVVInput(KeyEvent event) {
-        String c = event.getCharacter();
-        if (c.matches("\\D")) {
-            cvvField.deletePreviousChar();
-        }
-    }
-
-    @FXML
-    private void handleAmountInput(KeyEvent event) {
-        String c = event.getCharacter();
-        if (c.matches("\\D")) {
-            amountTextField.deletePreviousChar();
-        }
-    }
 
     @FXML
     private void handleTopUp() {
@@ -141,6 +109,46 @@ public class TopUpController {
 
     @FXML
     private void initialize() {
+        amountTextField.setTextFormatter(
+                new TextFormatter<Integer>(new IntegerStringConverter(), 0, change -> {
+                    String newText = change.getControlNewText();
+                    if (newText.matches("\\d*")) {
+                        return change;
+                    }
+                    return null;
+                }));
+
+        cardNumberField.setTextFormatter(
+                new TextFormatter<String>(change -> {
+                    String newText = change.getControlNewText();
+                    if (newText.matches("\\d{0,16}")) {
+                        return change;
+                    }
+                    return null;
+                }));
+
+        expiryDateField.setTextFormatter(
+                new TextFormatter<String>(change -> {
+                    String newText = change.getControlNewText();
+                    if (newText.length() > 2 && newText.charAt(2) != '/') {
+                        return null;
+                    }
+
+                    if (newText.matches("^[012]?[0-9]?\\/?[0-9]{0,2}$")) {
+                        return change;
+                    }
+                    return null;
+                }));
+
+        cvvField.setTextFormatter(
+                new TextFormatter<String>(change -> {
+                    String newText = change.getControlNewText();
+                    if (newText.matches("\\d{0,3}")) {
+                        return change;
+                    }
+                    return null;
+                }));
+
         paymentMethodChoiceBox.getItems().addAll("Contanti", "Carta di credito/debito", "Bancomat");
         paymentMethodChoiceBox.getSelectionModel().selectFirst();
 
