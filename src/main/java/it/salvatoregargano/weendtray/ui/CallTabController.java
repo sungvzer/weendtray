@@ -1,5 +1,6 @@
 package it.salvatoregargano.weendtray.ui;
 
+import java.net.URL;
 import java.util.Date;
 
 import it.salvatoregargano.weendtray.acl.CredentialsService;
@@ -19,6 +20,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -37,6 +40,8 @@ public class CallTabController extends Observable<PhoneEvent> {
 
     @FXML
     private Text callDurationText;
+
+    private MediaPlayer audioPlayer;
 
     private Timeline callTimer;
 
@@ -75,6 +80,11 @@ public class CallTabController extends Observable<PhoneEvent> {
             if (callTimer != null) {
                 callTimer.stop();
             }
+
+            if (audioPlayer != null) {
+                audioPlayer.stop();
+            }
+
             callDurationText.setText("");
 
             RegularUser user = (RegularUser) CredentialsService.getInstance().getLoggedUser();
@@ -88,12 +98,32 @@ public class CallTabController extends Observable<PhoneEvent> {
             if (callTimer != null) {
                 callTimer.play();
             }
+
+            if (audioPlayer != null) {
+                audioPlayer.seek(audioPlayer.getStartTime());
+                audioPlayer.play();
+            }
         }
     }
 
     @FXML
     private void initialize() {
         addObserver(Biller.getInstance());
+
+        try {
+            URL audioUrl = getClass().getResource("/sounds/call.mp3");
+
+            if (audioUrl != null) {
+                Media media = new Media(audioUrl.toExternalForm());
+                audioPlayer = new MediaPlayer(media);
+                // Imposta il loop infinito
+                audioPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            } else {
+                System.err.println("Impossibile trovare il file audio MP3!");
+            }
+        } catch (Exception e) {
+            System.err.println("Errore durante il caricamento dell'audio: " + e.getMessage());
+        }
 
         phoneNumber.setTextFormatter(
                 new TextFormatter<String>(change -> {
