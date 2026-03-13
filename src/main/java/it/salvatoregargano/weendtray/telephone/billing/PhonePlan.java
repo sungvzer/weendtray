@@ -33,6 +33,45 @@ public class PhonePlan {
         return new PhonePlan[] { REGULAR, PREMIUM, BUSINESS };
     }
 
+    public int getMinutesLimit() {
+        switch (name) {
+            case "REGULAR":
+                return 100;
+            case "PREMIUM":
+                return 500;
+            case "BUSINESS":
+                return 1000;
+            default:
+                throw new IllegalArgumentException("Unknown phone plan: " + name);
+        }
+    }
+
+    public int getMessagesLimit() {
+        switch (name) {
+            case "REGULAR":
+                return 100;
+            case "PREMIUM":
+                return 500;
+            case "BUSINESS":
+                return 1000;
+            default:
+                throw new IllegalArgumentException("Unknown phone plan: " + name);
+        }
+    }
+
+    public double getDataLimitMB() {
+        switch (name) {
+            case "REGULAR":
+                return 512;
+            case "PREMIUM":
+                return 2048;
+            case "BUSINESS":
+                return 5120;
+            default:
+                throw new IllegalArgumentException("Unknown phone plan: " + name);
+        }
+    }
+
     public static PhonePlan valueOf(String name) {
         switch (name) {
             case "REGULAR":
@@ -41,6 +80,19 @@ public class PhonePlan {
                 return PREMIUM;
             case "BUSINESS":
                 return BUSINESS;
+            default:
+                throw new IllegalArgumentException("Unknown phone plan: " + name);
+        }
+    }
+
+    public double getRenewalCost() {
+        switch (name) {
+            case "REGULAR":
+                return 10.0;
+            case "PREMIUM":
+                return 30.0;
+            case "BUSINESS":
+                return 50.0;
             default:
                 throw new IllegalArgumentException("Unknown phone plan: " + name);
         }

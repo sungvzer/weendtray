@@ -113,7 +113,7 @@ public class Main extends Application {
         Scene scene = SceneFactory.createScene(root);
 
         stage.setScene(scene);
-        stage.setHeight(400);
+        stage.setHeight(800);
         stage.setWidth(600);
         stage.setTitle("WeendTray");
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png"))));

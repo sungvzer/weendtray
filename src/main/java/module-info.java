@@ -6,6 +6,7 @@ open module WeendTray {
     requires transitive javafx.graphics;
     requires javafx.base;
     requires java.desktop;
+    requires javafx.media;
 
     exports it.salvatoregargano.weendtray;
 }

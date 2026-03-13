@@ -17,7 +17,13 @@
         <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
         <Button mnemonicParsing="false" onAction="#onLogout" text="Esci" />
     </ToolBar>
-    <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
+        VBox.vgrow="ALWAYS">
         <Tab fx:id="usersTab" closable="false" text="Utenti" />
+        <Tab fx:id="userDashboardTab" closable="false" text="Dashboard" />
+        <Tab fx:id="topUpTab" closable="false" text="Ricarica" />
+        <Tab fx:id="internetTab" closable="false" text="Internet" />
+        <Tab fx:id="messagesTab" closable="false" text="Messaggi" />
+        <Tab fx:id="callTab" closable="false" text="Chiamate" />
     </TabPane>
 </VBox>
