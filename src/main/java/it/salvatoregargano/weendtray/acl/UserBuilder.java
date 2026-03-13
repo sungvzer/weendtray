@@ -20,6 +20,12 @@ public class UserBuilder implements Builder {
     }
 
     @Override
+    public UserBuilder withUsername(String username) {
+        this.username = username;
+        return this;
+    }
+
+    @Override
     public UserBuilder withId(int id) {
         this.id = Optional.of(id);
         return this;
