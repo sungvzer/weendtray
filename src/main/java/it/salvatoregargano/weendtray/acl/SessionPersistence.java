@@ -5,7 +5,10 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.Logger;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
 /**
@@ -23,6 +26,21 @@ import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
  * </p>
  */
 public class SessionPersistence {
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
+    private static SessionPersistence instance = null;
+
+    private SessionPersistence() {
+        LoggerInjector.inject(this);
+    }
+
+    public static SessionPersistence getInstance() {
+        if (instance == null) {
+            instance = new SessionPersistence();
+        }
+        return instance;
+    }
+
     /**
      * Retrieves a user associated with a given session token. This method checks
      * the
@@ -34,7 +52,7 @@ public class SessionPersistence {
      * @return an Optional containing the User associated with the session token, or
      *         an empty Optional if the token is invalid or has expired
      */
-    public static Optional<User> getUserBySessionToken(String token) {
+    public Optional<User> getUserBySessionToken(String token) {
         try (var statement = DatabaseConnection.getInstance().getConnection().prepareStatement(
                 "SELECT user_id FROM user_session WHERE session_token = ? AND expires_at > ?")) {
 
@@ -44,10 +62,10 @@ public class SessionPersistence {
 
             if (resultSet.next()) {
                 int userId = resultSet.getInt("user_id");
-                return Optional.ofNullable(UserPersistence.getUserById(userId));
+                return Optional.ofNullable(UserPersistence.getInstance().getUserById(userId));
             }
         } catch (SQLException e) {
-            CombinedLogger.getInstance().error("Error while retrieving user by session token: " + e.getMessage());
+            loggerProvider.createLogger().error("Error while retrieving user by session token: " + e.getMessage());
         }
 
         return Optional.empty();
@@ -58,8 +76,8 @@ public class SessionPersistence {
      * 
      * @param user the user for whom to create a session
      */
-    public static void createSessionForUser(User user) {
-        final CombinedLogger logger = CombinedLogger.getInstance();
+    public void createSessionForUser(User user) {
+        final Logger logger = loggerProvider.createLogger();
         logger.info("Creating session for user " + user.getUsername());
 
         if (user.getId() == -1) {
@@ -96,8 +114,8 @@ public class SessionPersistence {
      * 
      * @param user the user for whom to delete sessions
      */
-    public static void deleteSessionsForUser(User user) {
-        final CombinedLogger logger = CombinedLogger.getInstance();
+    public void deleteSessionsForUser(User user) {
+        final Logger logger = loggerProvider.createLogger();
         logger.info("Deleting sessions for user " + user.getUsername());
 
         if (user.getId() == -1) {

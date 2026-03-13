@@ -50,12 +50,12 @@ public class AdminFirstPageController {
                 .withRole(UserRole.ADMIN)
                 .build();
 
-        UserPersistence.saveUser(user);
-        AlertFactory.createAlert(Alert.AlertType.CONFIRMATION, "Utente admin creato, verrai reindirizzato alla schermata di accesso.").showAndWait();
-
+        UserPersistence.getInstance().saveUser(user);
+        AlertFactory.createAlert(Alert.AlertType.CONFIRMATION,
+                "Utente admin creato, verrai reindirizzato alla schermata di accesso.").showAndWait();
 
         var homePage = getClass().getResource("/it/salvatoregargano/weendtray/LoginPage.fxml");
 
-        SceneManager.changeNodeSceneRootOrExit(username, homePage);
+        SceneManager.getInstance().changeNodeSceneRootOrExit(username, homePage);
     }
 }

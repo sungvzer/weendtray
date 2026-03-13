@@ -51,7 +51,7 @@ public class LoginPageController {
         }
 
         URL url = getClass().getResource("/it/salvatoregargano/weendtray/HomePage.fxml");
-        SceneManager.changeNodeSceneRootOrExit(username, url);
+        SceneManager.getInstance().changeNodeSceneRootOrExit(username, url);
     }
 
     public void onSignup() {

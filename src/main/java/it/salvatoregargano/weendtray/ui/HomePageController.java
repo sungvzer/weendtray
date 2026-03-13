@@ -8,7 +8,9 @@ import it.salvatoregargano.weendtray.acl.CredentialsService;
 import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserRole;
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 import it.salvatoregargano.weendtray.patterns.Observer;
 import it.salvatoregargano.weendtray.telephone.billing.Wallet;
 import it.salvatoregargano.weendtray.telephone.billing.WalletService;
@@ -21,6 +23,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 
 public class HomePageController implements Observer<Wallet> {
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
+
     @FXML
     Text helloField;
 
@@ -43,6 +48,10 @@ public class HomePageController implements Observer<Wallet> {
     @FXML
     TabPane tabPane;
 
+    public HomePageController() {
+        LoggerInjector.inject(this);
+    }
+
     private void initializeTab(Tab tab, String fxmlPath) {
         tab.selectedProperty().addListener((_, _, isNowSelected) -> {
             if (isNowSelected && tab.getContent() == null) {
@@ -51,7 +60,7 @@ public class HomePageController implements Observer<Wallet> {
                     Node content = loader.load();
                     tab.setContent(content);
                 } catch (IOException e) {
-                    CombinedLogger.getInstance()
+                    loggerProvider.createLogger()
                             .error("Could not load %s tab.".formatted(tab.getText()) + e.getCause().getMessage());
                 }
             }
@@ -63,7 +72,7 @@ public class HomePageController implements Observer<Wallet> {
                 Node content = loader.load();
                 tab.setContent(content);
             } catch (IOException e) {
-                CombinedLogger.getInstance()
+                loggerProvider.createLogger()
                         .error("Could not load %s tab.".formatted(tab.getText()) + e.getCause().getMessage());
             }
         }
@@ -91,14 +100,14 @@ public class HomePageController implements Observer<Wallet> {
                 if (walletOptional.isPresent()) {
                     refreshWalletInfo(walletOptional.get());
                 } else {
-                    CombinedLogger.getInstance()
+                    loggerProvider.createLogger()
                             .error("No wallet found for user %s".formatted(regularUser.getUsername()));
                     AlertFactory.createAlert(AlertType.ERROR, "Impossibile recuperare il portafoglio")
                             .showAndWait();
                     System.exit(1);
                 }
             } catch (Exception e) {
-                CombinedLogger.getInstance().error("Could not retrieve wallet for user %s: %s"
+                loggerProvider.createLogger().error("Could not retrieve wallet for user %s: %s"
                         .formatted(regularUser.getUsername(), e.getMessage()));
                 AlertFactory.createAlert(AlertType.ERROR, "Impossibile recuperare il portafoglio")
                         .showAndWait();
@@ -134,7 +143,7 @@ public class HomePageController implements Observer<Wallet> {
     public void onLogout() {
         CredentialsService.getInstance().logout();
         URL url = getClass().getResource("/it/salvatoregargano/weendtray/LoginPage.fxml");
-        SceneManager.changeNodeSceneRootOrExit(helloField, url);
+        SceneManager.getInstance().changeNodeSceneRootOrExit(helloField, url);
     }
 
     private void updateHelloField(Double balance) {

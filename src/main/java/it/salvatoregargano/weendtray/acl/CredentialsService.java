@@ -2,7 +2,9 @@ package it.salvatoregargano.weendtray.acl;
 
 import java.util.Optional;
 
-import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.logging.GetLoggerProviderFromEnv;
+import it.salvatoregargano.weendtray.logging.LoggerInjector;
+import it.salvatoregargano.weendtray.logging.LoggerProvider;
 
 /**
  * The CredentialsService class is responsible for managing user authentication
@@ -15,6 +17,13 @@ import it.salvatoregargano.weendtray.logging.CombinedLogger;
 public class CredentialsService {
     private static CredentialsService instance = null;
     private User loggedUser = null;
+
+    @GetLoggerProviderFromEnv(defaultType = "COMBINED")
+    private LoggerProvider loggerProvider;
+
+    public CredentialsService() {
+        LoggerInjector.inject(this);
+    }
 
     public static CredentialsService getInstance() {
         if (instance == null) {
@@ -35,12 +44,12 @@ public class CredentialsService {
      *                                 correspond to the user.
      */
     public void resumeSession(User user, String token) throws CredentialsServiceError {
-        Optional<User> sessionUser = SessionPersistence.getUserBySessionToken(token);
+        Optional<User> sessionUser = SessionPersistence.getInstance().getUserBySessionToken(token);
         if (sessionUser.isEmpty() || sessionUser.get().getId() != user.getId()) {
             throw new InvalidSessionTokenError();
         }
 
-        CombinedLogger.getInstance()
+        loggerProvider.createLogger()
                 .info("User %s logged in with session token.".formatted(user.getUsername()));
         loggedUser = user;
     }
@@ -60,7 +69,7 @@ public class CredentialsService {
      *                                 deactivated.
      */
     public void login(String username, String password, boolean keepSession) throws CredentialsServiceError {
-        User user = UserPersistence.getUserByUsername(username);
+        User user = UserPersistence.getInstance().getUserByUsername(username);
         if (user == null || !user.verifyPassword(password)) {
             throw new BadCredentialsError();
         }
@@ -70,7 +79,7 @@ public class CredentialsService {
         }
 
         if (keepSession) {
-            SessionPersistence.createSessionForUser(user);
+            SessionPersistence.getInstance().createSessionForUser(user);
         }
 
         loggedUser = user;
@@ -85,7 +94,7 @@ public class CredentialsService {
      * sessions for the user and clears the logged-in user reference.
      */
     public void logout() {
-        SessionPersistence.deleteSessionsForUser(loggedUser);
+        SessionPersistence.getInstance().deleteSessionsForUser(loggedUser);
         loggedUser = null;
     }
 }
