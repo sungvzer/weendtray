@@ -7,6 +7,7 @@ import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserPersistence;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.patterns.Observable;
 import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
 
 /**
@@ -16,7 +17,7 @@ import it.salvatoregargano.weendtray.persistence.DatabaseConnection;
  * interacts with the
  * database to persist wallet information.
  */
-public class WalletService {
+public class WalletService extends Observable<Wallet> {
     private static WalletService instance;
 
     private WalletService() {
@@ -56,8 +57,12 @@ public class WalletService {
                 createStatement.executeUpdate();
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
-                    return fromResultSet(resultSet);
+                    Wallet wallet = fromResultSet(resultSet);
+                    notifyObservers(wallet);
+
+                    return wallet;
                 }
+
             }
         }
 
@@ -74,11 +79,13 @@ public class WalletService {
         var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
         if (!resultSet.next()) {
             logger.error("Tried to add messages to a wallet that does not exist");
+            return;
         }
 
         var newMessagesCount = wallet.getMessagesCount() + messages;
         statement.executeUpdate(
                 "UPDATE wallet SET messages_count = " + newMessagesCount + " WHERE id = " + wallet.getId());
+        notifyObservers(wallet);
     }
 
     public void addMinutes(Wallet wallet, int minutes) throws SQLException {
@@ -91,11 +98,13 @@ public class WalletService {
         var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
         if (!resultSet.next()) {
             logger.error("Tried to add minutes to a wallet that does not exist");
+            return;
         }
 
         var newMinutesCount = wallet.getMinutesCount() + minutes;
         statement.executeUpdate(
                 "UPDATE wallet SET minutes_count = " + newMinutesCount + " WHERE id = " + wallet.getId());
+        notifyObservers(wallet);
     }
 
     public void addData(Wallet wallet, double dataMB) throws SQLException {
@@ -108,11 +117,14 @@ public class WalletService {
         var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
         if (!resultSet.next()) {
             logger.error("Tried to add data to a wallet that does not exist");
+            return;
         }
 
         var newDataCount = wallet.getDataCount() + dataMB;
         statement.executeUpdate(
                 "UPDATE wallet SET data_count = " + newDataCount + " WHERE id = " + wallet.getId());
+        notifyObservers(wallet);
+
     }
 
     public void addAmountToWallet(Wallet wallet, double amount) throws SQLException {
@@ -125,10 +137,23 @@ public class WalletService {
         var resultSet = statement.executeQuery("SELECT * FROM wallet WHERE id = " + wallet.getId());
         if (!resultSet.next()) {
             logger.error("Tried to charge a wallet that does not exist");
+            return;
         }
 
         var newBalance = wallet.getBalance() + amount;
         statement.executeUpdate("UPDATE wallet SET balance = " + newBalance + " WHERE id = " + wallet.getId());
+        notifyObservers(wallet);
+    }
+
+    @Override
+    public void notifyObservers(Wallet event) {
+        Wallet updatedWallet = null;
+        try {
+            updatedWallet = getWallet(event.getUserId());
+            super.notifyObservers(updatedWallet);
+        } catch (SQLException e) {
+            CombinedLogger.getInstance().error("Could not retrieve updated wallet for user id " + event.getUserId());
+        }
     }
 
     private Wallet fromResultSet(ResultSet resultSet) throws SQLException {

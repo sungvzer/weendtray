@@ -1,6 +1,8 @@
 package it.salvatoregargano.weendtray.telephone.billing;
 
-public class Wallet {
+import it.salvatoregargano.weendtray.patterns.Observable;
+
+public class Wallet extends Observable<Wallet> {
     private final int id;
     private final double balance;
     private final int userId;

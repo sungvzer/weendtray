@@ -9,6 +9,7 @@ import it.salvatoregargano.weendtray.acl.RegularUser;
 import it.salvatoregargano.weendtray.acl.User;
 import it.salvatoregargano.weendtray.acl.UserRole;
 import it.salvatoregargano.weendtray.logging.CombinedLogger;
+import it.salvatoregargano.weendtray.patterns.Observer;
 import it.salvatoregargano.weendtray.telephone.billing.Wallet;
 import it.salvatoregargano.weendtray.telephone.billing.WalletService;
 import javafx.fxml.FXML;
@@ -19,7 +20,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 
-public class HomePageController {
+public class HomePageController implements Observer<Wallet> {
     @FXML
     Text helloField;
 
@@ -27,12 +28,43 @@ public class HomePageController {
     Tab usersTab;
 
     @FXML
+    Tab topUpTab;
+
+    @FXML
     Tab userDashboardTab;
 
     @FXML
     TabPane tabPane;
 
+    private void initializeTab(Tab tab, String fxmlPath) {
+        tab.selectedProperty().addListener((_, _, isNowSelected) -> {
+            if (isNowSelected && tab.getContent() == null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                try {
+                    Node content = loader.load();
+                    tab.setContent(content);
+                } catch (IOException e) {
+                    CombinedLogger.getInstance()
+                            .error("Could not load %s tab.".formatted(tab.getText()) + e.getCause().getMessage());
+                }
+            }
+        });
+
+        if (tab.isSelected()) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            try {
+                Node content = loader.load();
+                tab.setContent(content);
+            } catch (IOException e) {
+                CombinedLogger.getInstance()
+                        .error("Could not load %s tab.".formatted(tab.getText()) + e.getCause().getMessage());
+            }
+        }
+    }
+
     public void initialize() {
+        WalletService.getInstance().addObserver(this);
+
         final User user = CredentialsService.getInstance().getLoggedUser();
 
         if (user.getRole() == UserRole.ADMIN) {
@@ -51,67 +83,38 @@ public class HomePageController {
                 AlertFactory.createAlert(AlertType.ERROR, "Impossibile recuperare il portafoglio")
                         .showAndWait();
             }
-            StringBuilder greeting = new StringBuilder(
-                    "Ciao, %s! Numero: %s".formatted(regularUser.getName(), regularUser.getPhoneNumber()));
-            if (walletOptional.isPresent()) {
-                greeting.append(" - Credito: €%.2f".formatted(walletOptional.get().getBalance()));
-            }
 
-            helloField.setText(greeting.toString());
+            updateHelloField(walletOptional.map(Wallet::getBalance).orElse(0.0));
         }
 
-        usersTab.selectedProperty().addListener((_, _, isNowSelected) -> {
-            if (isNowSelected && usersTab.getContent() == null) {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/it/salvatoregargano/weendtray/UsersTab.fxml"));
-                try {
-                    Node content = loader.load();
-                    usersTab.setContent(content);
-                } catch (IOException e) {
-                    CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
-                }
-            }
-        });
-
-        if (usersTab.isSelected()) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/salvatoregargano/weendtray/UsersTab.fxml"));
-            try {
-                Node content = loader.load();
-                usersTab.setContent(content);
-            } catch (IOException e) {
-                CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
-            }
-        }
-
-        userDashboardTab.selectedProperty().addListener((_, _, isNowSelected) -> {
-            if (isNowSelected && userDashboardTab.getContent() == null) {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/it/salvatoregargano/weendtray/UserDashboard.fxml"));
-                try {
-                    Node content = loader.load();
-                    userDashboardTab.setContent(content);
-                } catch (IOException e) {
-                    CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
-                }
-            }
-        });
-
-        if (userDashboardTab.isSelected()) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/salvatoregargano/weendtray/UserDashboard.fxml"));
-            try {
-                Node content = loader.load();
-                userDashboardTab.setContent(content);
-            } catch (IOException e) {
-                CombinedLogger.getInstance().error("Could not load Users tab." + e.getCause().getMessage());
-            }
-        }
-
-
+        initializeTab(usersTab, "/it/salvatoregargano/weendtray/UsersTab.fxml");
+        initializeTab(userDashboardTab, "/it/salvatoregargano/weendtray/UserDashboard.fxml");
+        initializeTab(topUpTab, "/it/salvatoregargano/weendtray/TopUp.fxml");
     }
 
     public void onLogout() {
         CredentialsService.getInstance().logout();
         URL url = getClass().getResource("/it/salvatoregargano/weendtray/LoginPage.fxml");
         SceneManager.changeNodeSceneRootOrExit(helloField, url);
+    }
+
+    private void updateHelloField(Double balance) {
+        User user = CredentialsService.getInstance().getLoggedUser();
+        if (user.getRole() == UserRole.ADMIN) {
+            helloField.setText("Ciao, %s! Sei un admin.".formatted(user.getUsername()));
+        } else {
+            RegularUser regularUser = (RegularUser) user;
+            helloField.setText("Ciao, %s! Numero: %s - Credito: €%.2f".formatted(
+                    regularUser.getName(),
+                    regularUser.getPhoneNumber(),
+                    balance));
+        }
+    }
+
+    @Override
+    public void update(Wallet event) {
+        if (CredentialsService.getInstance().getLoggedUser().getId() == event.getUserId()) {
+            updateHelloField(event.getBalance());
+        }
     }
 }
