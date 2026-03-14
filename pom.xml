@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>it.salvatoregargano</groupId>
+    <groupId>it.garganovolpe</groupId>
     <artifactId>WeendTray</artifactId>
     <version>1.0</version>
     <name>weendtray</name>
@@ -82,7 +82,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                it.salvatoregargano.weendtray/it.salvatoregargano.weendtray.Main
+                                it.garganovolpe.weendtray/it.garganovolpe.weendtray.Main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
@@ -99,7 +99,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.salvatoregargano.weendtray.Main</mainClass>
+                            <mainClass>it.garganovolpe.weendtray.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

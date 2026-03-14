@@ -8,5 +8,5 @@ open module WeendTray {
     requires java.desktop;
     requires javafx.media;
 
-    exports it.salvatoregargano.weendtray;
+    exports it.garganovolpe.weendtray;
 }

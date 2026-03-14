@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="8.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/25"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="it.garganovolpe.weendtray.ui.TopUpController">
+
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+    <Text text="Ricarica credito" />
+    <HBox alignment="CENTER_LEFT" spacing="8.0">
+        <Text text="Importo:" />
+        <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+        <Text text="+€" />
+        <TextField fx:id="amountTextField" promptText="Inserisci l'importo da ricaricare"
+            HBox.hgrow="ALWAYS" />
+    </HBox>
+    <!-- Metodo di pagamento: contanti, carta di credito, bancomat -->
+    <HBox alignment="CENTER_LEFT" spacing="8.0">
+        <Text text="Metodo di pagamento:" />
+        <Region prefHeight="0.0" HBox.hgrow="ALWAYS" />
+        <ChoiceBox fx:id="paymentMethodChoiceBox" />
+    </HBox>
+    <VBox spacing="8.0" alignment="CENTER" fx:id="creditCardDetailsBox" visible="false"
+        managed="false">
+        <Text text="Dettagli carta di credito" />
+        <TextField fx:id="cardholderNameField" promptText="Nome del titolare della carta" />
+        <TextField fx:id="cardNumberField" promptText="Numero carta di credito" />
+        <HBox alignment="CENTER" spacing="8.0">
+            <TextField fx:id="expiryDateField" promptText="Data di scadenza (MM/AA)" />
+            <TextField fx:id="cvvField" promptText="CVV" />
+        </HBox>
+    </VBox>
+    <Button mnemonicParsing="false" onAction="#handleTopUp" text="Ricarica" />
+</VBox>
