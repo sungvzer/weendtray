@@ -1,5 +1,7 @@
 package it.garganovolpe.weendtray.telephone.billing;
-
+/* 
+ * Implementation of the {@link BillingStrategy} interface for regular customers.
+ */
 import it.garganovolpe.weendtray.telephone.CallEvent;
 import it.garganovolpe.weendtray.telephone.DataUsageEvent;
 import it.garganovolpe.weendtray.telephone.MessageEvent;

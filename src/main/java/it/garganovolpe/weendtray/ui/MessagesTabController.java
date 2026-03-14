@@ -14,6 +14,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Text;
 
+/*
+    * A controller for the messages tab in the user interface.
+    * This controller handles the logic for composing and sending messages, including validating the recipient's phone number,
+    * calculating the number of message segments based on the message length, and interacting with the billing system to record message events.
+*/
 public class MessagesTabController extends Observable<PhoneEvent> {
     @FXML
     private TextField recipientField;

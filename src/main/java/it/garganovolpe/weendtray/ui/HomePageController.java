@@ -21,7 +21,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
-
+/*
+    * A controller for the home page of the application, which serves as the main dashboard for users after logging in.
+    * This controller manages the display of user information, wallet balance, and navigation between different tabs based on user roles.
+    * It also listens for updates to the user's wallet and refreshes the displayed information accordingly.
+*/
 public class HomePageController implements Observer<Wallet> {
     @GetLoggerProviderFromEnv(defaultType = "COMBINED")
     private LoggerProvider loggerProvider;

@@ -1,5 +1,9 @@
 package it.garganovolpe.weendtray.telephone.billing;
-
+/*
+    * A class representing the kind of user account, such as fixed cost or pay-as-you-go.
+    * This class provides methods to retrieve the account kind by id or name, and to get all available kinds.
+    * It also defines two static instances for the fixed cost and pay-as-you-go account types.
+*/
 public class UserAccountKind {
     private String id;
 

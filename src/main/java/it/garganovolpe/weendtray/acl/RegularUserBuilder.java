@@ -6,7 +6,7 @@ import it.garganovolpe.weendtray.telephone.billing.PhonePlan;
 import it.garganovolpe.weendtray.telephone.billing.UserAccountKind;
 
 /**
- * Helper class for building {@link User} objects.
+ * Helper class for building {@link RegularUser} objects.
  */
 public class RegularUserBuilder implements Builder {
     private String username;

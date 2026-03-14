@@ -4,7 +4,10 @@ import java.util.Objects;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-
+/*
+    * A factory class for creating styled scenes used throughout the application.
+    * This factory ensures that all scenes have a consistent look and feel by applying a global stylesheet.
+*/
 public class SceneFactory {
     private static final String GLOBAL_CSS = Objects.requireNonNull(SceneFactory.class.getResource("main.css"))
             .toExternalForm();

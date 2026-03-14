@@ -25,6 +25,13 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/*
+    * A controller for managing the call tab in the user interface.
+    * This controller handles the logic for making and managing phone calls, including UI updates and event handling.
+    * It interacts with the billing system to record call events and calculates call duration for billing purposes.
+*/
+
+
 public class CallTabController extends Observable<PhoneEvent> {
     @FXML
     private TextField phoneNumber;

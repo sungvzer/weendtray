@@ -21,7 +21,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-
+/*
+    * A controller for the user information page, which allows viewing and editing of user details.
+    * This controller manages the display and editing of user information such as username, name, surname, phone number, address, and account settings.
+    * It also handles enabling and disabling of user accounts, with appropriate validation and feedback to the user.
+*/
 public class UserInfoController {
     private User user;
     private SimpleBooleanProperty isEditing;

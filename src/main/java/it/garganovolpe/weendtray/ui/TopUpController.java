@@ -11,7 +11,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
-
+/*
+    * A controller for the top-up functionality in the user interface.
+    * This controller manages the user input for topping up their wallet, 
+    * including selecting a payment method and entering payment details.
+    * It validates the input fields and interacts with the wallet service to add funds to the user's account, 
+    * providing feedback on the success or failure of the operation.
+*/
 public class TopUpController {
     @FXML
     private ChoiceBox<String> paymentMethodChoiceBox;

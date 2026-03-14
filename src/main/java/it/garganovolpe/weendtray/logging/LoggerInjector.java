@@ -2,6 +2,9 @@ package it.garganovolpe.weendtray.logging;
 
 import java.lang.reflect.Field;
 
+/* 
+ * A utility class for injecting logger providers into objects based on environment variables.
+ */
 public class LoggerInjector {
     public static void inject(Object target) {
         Class<?> clazz = target.getClass();

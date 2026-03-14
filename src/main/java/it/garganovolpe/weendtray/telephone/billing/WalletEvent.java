@@ -1,5 +1,8 @@
 package it.garganovolpe.weendtray.telephone.billing;
-
+/*
+    * A class representing an event related to a user's wallet, such as a recharge or payment.
+    * This class encapsulates the wallet involved, the amount of the transaction, and the payment method used.
+*/
 public class WalletEvent {
     private final Wallet wallet;
     private final double amount;

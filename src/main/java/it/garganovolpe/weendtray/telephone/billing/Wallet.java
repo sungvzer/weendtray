@@ -1,5 +1,9 @@
 package it.garganovolpe.weendtray.telephone.billing;
-
+/* 
+ * A class representing a user's wallet for managing their balance and usage.
+ * The wallet keeps track of the user's balance, message count, call minutes, and data usage.
+ * It provides methods to get and set these values, ensuring that counts cannot be negative.
+ */
 public class Wallet {
     private final int id;
     private final double balance;

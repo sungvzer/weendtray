@@ -4,7 +4,10 @@ import java.util.Objects;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-
+/*
+    * A factory class for creating styled alert dialogs used throughout the application.
+    * This factory ensures that all alerts have a consistent look and feel by applying a global stylesheet.
+*/
 public class AlertFactory {
     private static final String GLOBAL_CSS = Objects.requireNonNull(AlertFactory.class.getResource("main.css"))
             .toExternalForm();

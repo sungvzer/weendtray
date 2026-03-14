@@ -41,7 +41,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
+/*
+    * A controller for the users management tab in the admin dashboard.
+    * This controller handles the display of user information in a table, including filtering and searching capabilities.
+    * It also provides functionality for opening detailed user information, activating/deactivating user accounts, and ensuring that at least one admin account remains active at all times.
+*/
 public class UsersTabController {
     @GetLoggerProviderFromEnv(defaultType = "COMBINED")
     private LoggerProvider loggerProvider;
