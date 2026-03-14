@@ -17,7 +17,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-
+/*
+    * A controller for the login page of the application, responsible for handling user authentication.
+    * This controller manages the login process by validating user credentials, providing feedback on login attempts,
+    * and navigating to the home page upon successful authentication. It also allows users to access the signup page for new account creation.
+*/
 public class LoginPageController {
     @FXML
     TextField username;

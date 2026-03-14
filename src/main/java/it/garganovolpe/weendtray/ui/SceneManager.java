@@ -10,7 +10,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-
+/*
+    * A single instance class responsible for managing scene transitions within the application.
+    * This class provides a method to change the root of the current scene to a new FXML layout, handling any potential loading errors gracefully.
+    * It also integrates logging to capture any issues that occur during scene transitions.
+*/
 public class SceneManager {
     private static SceneManager instance;
 

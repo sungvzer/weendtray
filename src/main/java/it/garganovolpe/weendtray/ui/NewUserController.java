@@ -15,7 +15,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
+/*
+    * A controller for the new user registration page.
+    * This controller manages the user input for creating a new account, including validating the input fields,
+    * checking for existing usernames and phone numbers, and saving the new user to the persistence layer upon successful validation.
+*/
 public class NewUserController {
     @FXML
     private TextField usernameField;
@@ -118,7 +122,7 @@ public class NewUserController {
 
         UserAccountKind accountKind = UserAccountKind.valueOf(accountKindChoiceBox.getValue());
 
-        RegularUser user = new RegularUserBuilder().withPlainTextPassword(passwordField.getText())
+        RegularUser user = (RegularUser) new RegularUserBuilder().withPlainTextPassword(passwordField.getText())
                 .withUsername(usernameField.getText())
                 .withRole(UserRole.USER)
                 .withName(nameField.getText())

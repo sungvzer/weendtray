@@ -10,7 +10,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
+/*
+    * A controller for the first page of the admin setup process.
+    * This controller handles the creation of the initial admin user by collecting the username and password,
+    * validating the input, and saving the user to the persistence layer. It also manages navigation to the login page after successful creation.
+*/
 public class AdminFirstPageController {
     @FXML
     TextField username;

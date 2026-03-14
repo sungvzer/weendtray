@@ -1,5 +1,8 @@
 package it.garganovolpe.weendtray.telephone.billing;
-
+/* 
+ * A builder for creating instances of the {@link Wallet} class.
+ * This builder allows for a fluent interface to set the properties of the wallet before building it.
+ */
 public class WalletBuilder {
     private int id;
     private double balance;

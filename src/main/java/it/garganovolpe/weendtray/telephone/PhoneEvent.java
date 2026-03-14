@@ -3,7 +3,14 @@ package it.garganovolpe.weendtray.telephone;
 import java.util.UUID;
 
 import it.garganovolpe.weendtray.telephone.billing.PhonePlan;
-
+/*
+    * An abstract class representing a generic phone event, such as a call, message, or data usage.
+    * This class encapsulates common properties of phone events, including the source and target phone numbers,
+    * the associated phone plan, and a unique identifier for the event.
+    * @see CallEvent
+    * @see MessageEvent
+    * @see DataUsageEvent
+*/
 public abstract class PhoneEvent {
     private final String sourceNumber;
     private final String targetNumber;
